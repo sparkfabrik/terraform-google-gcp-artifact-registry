@@ -1,4 +1,3 @@
-
 project_id = "my-sample-project-id"
 
 artifact_repositories = {
