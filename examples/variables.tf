@@ -1,6 +1,6 @@
 variable "project_id" {
   type        = string
-  description = "The GCP project ID to host the cluster in"
+  description = "The GCP project ID that hosts the Artifact Registry."
 }
 
 # Artifact Registry repositories.

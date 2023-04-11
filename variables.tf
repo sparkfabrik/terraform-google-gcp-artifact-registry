@@ -1,6 +1,6 @@
 variable "project_id" {
   type        = string
-  description = "The project name to deploy the resources."
+  description = "The GCP project ID that hosts the Artifact Registry."
 }
 
 # Artifact Registry repositories.

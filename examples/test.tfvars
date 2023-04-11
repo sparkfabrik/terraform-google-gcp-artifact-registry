@@ -13,7 +13,7 @@ artifact_repositories = {
     location = "europe-west1"
   },
   "project-2-images" = {
-    description = "Docker images repository"
+    description = "Docker images repository 2"
     readers = [
       "group:dev-team-2@example.com"
     ]

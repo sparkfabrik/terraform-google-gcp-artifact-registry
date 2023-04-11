@@ -11,4 +11,3 @@ generate-docs: lint
 		--volume "$(PWD):/terraform-docs" \
 		-w /terraform-docs \
 		quay.io/terraform-docs/terraform-docs:0.16.0 markdown table --config .terraform-docs.yml --output-file README.md --output-mode inject .
-		
