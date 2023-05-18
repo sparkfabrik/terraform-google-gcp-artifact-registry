@@ -4,7 +4,7 @@ resource "google_project_service" "project" {
   service = "artifactregistry.googleapis.com"
 
   disable_dependent_services = false
-  disable_on_destroy = false
+  disable_on_destroy         = false
 }
 
 locals {
@@ -30,6 +30,7 @@ locals {
       "member" : item.member,
     }
   }
+  custom_role_artifact_registry_lister_id = "projects/${var.project_id}/roles/${var.artifact_registry_listers_custom_role_name}"
 }
 
 resource "google_artifact_registry_repository" "repositories" {
@@ -37,9 +38,9 @@ resource "google_artifact_registry_repository" "repositories" {
 
   project       = var.project_id
   repository_id = each.key
-  location      = each.value.location  
+  location      = each.value.location != "" ? each.value.location : var.default_location
   format        = each.value.format
-  description   = each.value.description  
+  description   = each.value.description
 }
 
 resource "google_artifact_registry_repository_iam_member" "member" {
@@ -50,4 +51,26 @@ resource "google_artifact_registry_repository_iam_member" "member" {
   location   = google_artifact_registry_repository.repositories[each.value.repository_id].location
   role       = each.value.role
   member     = each.value.member
+}
+
+# Create a custom role that allows the list of the Artifact Registry repositories
+resource "google_project_iam_custom_role" "artifact_registry_lister" {
+  count = length(var.artifact_registry_listers)
+
+  role_id     = var.artifact_registry_listers_custom_role_name
+  title       = "Artifact Registry Lister"
+  description = "This role grants the ability to list repositories in Artifact Registry"
+  permissions = ["artifactregistry.repositories.list"]
+}
+
+# Add the custom role to the group staff@sparkfabrik
+resource "google_project_iam_binding" "artifact_registry_lister" {
+  count = length(var.artifact_registry_listers)
+
+  project = var.project_id
+  role    = local.custom_role_artifact_registry_lister_id
+  members = var.artifact_registry_listers
+  depends_on = [
+    google_project_iam_custom_role.artifact_registry_lister,
+  ]
 }
