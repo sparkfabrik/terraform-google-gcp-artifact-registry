@@ -1,4 +1,4 @@
-  # Refs: https://github.com/terraform-docs/terraform-docs
+# Refs: https://github.com/terraform-docs/terraform-docs
 formatter: "" # this is required
 
 version: ""
@@ -16,11 +16,17 @@ sections:
 
 content: |-
   {{ .Providers }}
+
   {{ .Requirements }}
+
   {{ .Inputs }}
+
   {{ .Outputs }}
+
   {{ .Resources }}
+
   {{ .Modules }}
+
   {{ .Footer }}
 
 output:

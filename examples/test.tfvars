@@ -19,6 +19,5 @@ artifact_repositories = {
     writers = [
       "user:admin@example.com"
     ]
-    location = "europe-west1"
-  }  
+  }
 }
