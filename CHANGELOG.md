@@ -20,7 +20,17 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.2.1] - 2023-05-19
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.2.0...0.2.1)
+
+### Changed
+
+- FIX: the `artifact_registry_listers_custom_role_name` variable is configured as `custom.artifactRegistryLister` by default. The previous default value was `custom.artifactRegistryListers`.
+
 ## [0.2.0] - 2023-05-18
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.1.0...0.2.0)
 
 ### Added
 
