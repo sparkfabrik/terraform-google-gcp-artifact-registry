@@ -25,7 +25,7 @@ variable "repositories" {
 variable "artifact_registry_listers_custom_role_name" {
   type        = string
   description = "Name of the custom role for Artifact Registry listers."
-  default     = "custom.artifactRegistryListers"
+  default     = "custom.artifactRegistryLister"
 }
 
 variable "artifact_registry_listers" {
