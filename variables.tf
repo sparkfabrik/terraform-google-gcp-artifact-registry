@@ -3,6 +3,12 @@ variable "project_id" {
   description = "The GCP project ID that hosts the Artifact Registry."
 }
 
+variable "enable_api" {
+  type        = boolean
+  description = "Whether to enable Artifact Registry API in the project. Useful if APIs are managed elsewhere."
+  default     = true
+}
+
 # The default location used for the Artifact Registry repositories.
 variable "default_location" {
   type        = string

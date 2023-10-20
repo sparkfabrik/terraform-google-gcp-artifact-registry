@@ -1,5 +1,7 @@
 # Enable Artifact Registry API
 resource "google_project_service" "project" {
+  count = var.enable_api ? 1 : 0
+
   project = var.project_id
   service = "artifactregistry.googleapis.com"
 
