@@ -4,7 +4,7 @@ variable "project_id" {
 }
 
 variable "enable_api" {
-  type        = boolean
+  type        = bool
   description = "Whether to enable Artifact Registry API in the project. Useful if APIs are managed elsewhere."
   default     = true
 }
