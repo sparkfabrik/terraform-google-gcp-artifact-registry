@@ -59,6 +59,7 @@ resource "google_artifact_registry_repository_iam_member" "member" {
 resource "google_project_iam_custom_role" "artifact_registry_lister" {
   count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
+  project     = var.project_id
   role_id     = var.artifact_registry_listers_custom_role_name
   title       = "Artifact Registry Lister"
   description = "This role grants the ability to list repositories in Artifact Registry"
@@ -67,7 +68,7 @@ resource "google_project_iam_custom_role" "artifact_registry_lister" {
 
 # Add the custom role to the group staff@sparkfabrik
 resource "google_project_iam_binding" "artifact_registry_lister" {
-  count = length(var.artifact_registry_listers)
+  count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
   project = var.project_id
   role    = local.custom_role_artifact_registry_lister_id
