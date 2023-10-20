@@ -57,7 +57,7 @@ resource "google_artifact_registry_repository_iam_member" "member" {
 
 # Create a custom role that allows the list of the Artifact Registry repositories
 resource "google_project_iam_custom_role" "artifact_registry_lister" {
-  count = length(var.artifact_registry_listers)
+  count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
   role_id     = var.artifact_registry_listers_custom_role_name
   title       = "Artifact Registry Lister"
