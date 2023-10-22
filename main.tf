@@ -1,5 +1,7 @@
 # Enable Artifact Registry API
 resource "google_project_service" "project" {
+  count = var.enable_api ? 1 : 0
+
   project = var.project_id
   service = "artifactregistry.googleapis.com"
 
@@ -30,7 +32,6 @@ locals {
       "member" : item.member,
     }
   }
-  custom_role_artifact_registry_lister_id = "projects/${var.project_id}/roles/${var.artifact_registry_listers_custom_role_name}"
 }
 
 resource "google_artifact_registry_repository" "repositories" {
@@ -55,8 +56,9 @@ resource "google_artifact_registry_repository_iam_member" "member" {
 
 # Create a custom role that allows the list of the Artifact Registry repositories
 resource "google_project_iam_custom_role" "artifact_registry_lister" {
-  count = length(var.artifact_registry_listers)
+  count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
+  project     = var.project_id
   role_id     = var.artifact_registry_listers_custom_role_name
   title       = "Artifact Registry Lister"
   description = "This role grants the ability to list repositories in Artifact Registry"
@@ -65,12 +67,9 @@ resource "google_project_iam_custom_role" "artifact_registry_lister" {
 
 # Add the custom role to the group staff@sparkfabrik
 resource "google_project_iam_binding" "artifact_registry_lister" {
-  count = length(var.artifact_registry_listers)
+  count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
   project = var.project_id
-  role    = local.custom_role_artifact_registry_lister_id
+  role    = google_project_iam_custom_role.artifact_registry_lister[0].name
   members = var.artifact_registry_listers
-  depends_on = [
-    google_project_iam_custom_role.artifact_registry_lister,
-  ]
 }
