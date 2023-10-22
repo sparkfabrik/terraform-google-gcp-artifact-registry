@@ -32,7 +32,6 @@ locals {
       "member" : item.member,
     }
   }
-  custom_role_artifact_registry_lister_id = "projects/${var.project_id}/roles/${var.artifact_registry_listers_custom_role_name}"
 }
 
 resource "google_artifact_registry_repository" "repositories" {
@@ -71,9 +70,6 @@ resource "google_project_iam_binding" "artifact_registry_lister" {
   count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
   project = var.project_id
-  role    = local.custom_role_artifact_registry_lister_id
+  role    = google_project_iam_custom_role.artifact_registry_lister[0].name
   members = var.artifact_registry_listers
-  depends_on = [
-    google_project_iam_custom_role.artifact_registry_lister,
-  ]
 }
