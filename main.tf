@@ -54,7 +54,7 @@ resource "google_artifact_registry_repository" "repositories" {
 
 
   dynamic "remote_repository_config" {
-    for_each = each.value.mode == "REMOTE_REPOSITORY" ? each.value.remote_repository_config_docker : {}
+    for_each = each.value.mode == "REMOTE_REPOSITORY" ? [each.value.remote_repository_config_docker] : []
 
     content {
       description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
@@ -64,7 +64,7 @@ resource "google_artifact_registry_repository" "repositories" {
       }
 
       dynamic "upstream_credentials" {
-        for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? remote_repository_config.value : {}
+        for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? [remote_repository_config.value] : []
         content {
           username_password_credentials {
             username                = upstream_credentials.value.username_password_credentials_username
