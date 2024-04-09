@@ -60,9 +60,9 @@ resource "google_artifact_registry_repository" "repositories" {
     ) ? each.value.remote_repository_config_docker : {}
 
     content {
-      description = virtual_repository_config.value.description == "" ? each.value.description : virtual_repository_config.value.description
+      description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
       docker_repository {
-        public_repository = virtual_repository_config.value.public_repository
+        public_repository = remote_repository_config.value.public_repository
       }
     }
   }
@@ -75,16 +75,16 @@ resource "google_artifact_registry_repository" "repositories" {
     ) ? each.value.remote_repository_config_docker : {}
 
     content {
-      description = virtual_repository_config.value.description == "" ? each.value.description : virtual_repository_config.value.description
+      description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
 
       docker_repository {
-        public_repository = virtual_repository_config.value.public_repository
+        public_repository = remote_repository_config.value.public_repository
       }
 
       upstream_credentials {
         username_password_credentials {
-          username                = virtual_repository_config.value.remote_repository_config_docker.username_password_credentials_username
-          password_secret_version = virtual_repository_config.value.remote_repository_config_docker.username_password_credentials_password_secret_version
+          username                = remote_repository_config.value.remote_repository_config_docker.username_password_credentials_username
+          password_secret_version = remote_repository_config.value.remote_repository_config_docker.username_password_credentials_password_secret_version
         }
       }
     }
