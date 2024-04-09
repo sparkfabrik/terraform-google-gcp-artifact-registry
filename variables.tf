@@ -21,7 +21,7 @@ variable "repositories" {
       priority   = optional(number, 0)
     })), null)
     remote_repository_config_docker = optional(object({
-      description                                           = string
+      description                                           = option(string, "")
       public_repository                                     = string
       username_password_credentials_username                = optional(string, "")
       username_password_credentials_password_secret_version = optional(string, "")

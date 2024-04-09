@@ -1,8 +1,3 @@
-variable "artifact_repositories" {
-}
-
-variable "project_id" {
-}
 
 module "repositories" {
   source       = "../"

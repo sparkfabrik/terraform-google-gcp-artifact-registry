@@ -45,9 +45,9 @@ resource "google_artifact_registry_repository" "repositories" {
     for_each = each.value.mode == "VIRTUAL_REPOSITORY" ? each.value.virtual_repository_config : {}
     content {
       upstream_policies {
-        id         = each.key
-        repository = each.value.repository
-        priority   = each.value.priority
+        id         = virtual_repository_config.key
+        repository = virtual_repository_config.value.repository
+        priority   = virtual_repository_config.value.priority
       }
     }
   }
@@ -60,9 +60,9 @@ resource "google_artifact_registry_repository" "repositories" {
     ) ? each.value.remote_repository_config : {}
 
     content {
-      description = each.value.description
+      description = virtual_repository_config.value.description == "" ? each.value.description : virtual_repository_config.value.description
       docker_repository {
-        public_repository = each.value.public_repository
+        public_repository = virtual_repository_config.value.public_repository
       }
     }
   }
@@ -75,16 +75,16 @@ resource "google_artifact_registry_repository" "repositories" {
     ) ? each.value.remote_repository_config : {}
 
     content {
-      description = each.value.description
+      description = virtual_repository_config.value.description == "" ? each.value.description : virtual_repository_config.value.description
 
       docker_repository {
-        public_repository = each.value.public_repository
+        public_repository = virtual_repository_config.value.public_repository
       }
 
       upstream_credentials {
         username_password_credentials {
-          username                = each.value.remote_repository_config_docker.username_password_credentials_username
-          password_secret_version = each.value.remote_repository_config_docker.username_password_credentials_password_secret_version
+          username                = virtual_repository_config.value.remote_repository_config_docker.username_password_credentials_username
+          password_secret_version = virtual_repository_config.value.remote_repository_config_docker.username_password_credentials_password_secret_version
         }
       }
     }
