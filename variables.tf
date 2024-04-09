@@ -26,10 +26,9 @@ variable "repositories" {
       username_password_credentials_username                = optional(string, "")
       username_password_credentials_password_secret_version = optional(string, "")
     }), null)
-    remote_repository_config = optional(map(any), null)
-    readers                  = optional(list(string), [])
-    writers                  = optional(list(string), [])
-    location                 = optional(string, "")
+    readers  = optional(list(string), [])
+    writers  = optional(list(string), [])
+    location = optional(string, "")
   }))
   description = "List of Artifact Registry repositories to create."
 

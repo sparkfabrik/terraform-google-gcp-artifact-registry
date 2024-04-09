@@ -57,7 +57,7 @@ resource "google_artifact_registry_repository" "repositories" {
     for_each = each.value.mode == "REMOTE_REPOSITORY" && (
       each.value.remote_repository_config_docker.username_password_credentials_username == "" ||
       each.value.remote_repository_config_docker.username_password_credentials_password_secret_version == ""
-    ) ? each.value.remote_repository_config : {}
+    ) ? each.value.remote_repository_config_docker : {}
 
     content {
       description = virtual_repository_config.value.description == "" ? each.value.description : virtual_repository_config.value.description
@@ -72,7 +72,7 @@ resource "google_artifact_registry_repository" "repositories" {
     for_each = each.value.mode == "REMOTE_REPOSITORY" && (
       each.value.remote_repository_config_docker.username_password_credentials_username != "" &&
       each.value.remote_repository_config_docker.username_password_credentials_password_secret_version != ""
-    ) ? each.value.remote_repository_config : {}
+    ) ? each.value.remote_repository_config_docker : {}
 
     content {
       description = virtual_repository_config.value.description == "" ? each.value.description : virtual_repository_config.value.description
