@@ -40,8 +40,58 @@ resource "google_artifact_registry_repository" "repositories" {
   repository_id = each.key
   mode          = each.value.mode
   location      = each.value.location != "" ? each.value.location : var.default_location
-  format        = each.value.format
-  description   = each.value.description
+
+  dynamic "virtual_repository_config" {
+    for_each = each.value.mode == "VIRTUAL_REPOSITORY" ? each.value.virtual_repository_config : {}
+    content {
+      upstream_policies {
+        id         = each.key
+        repository = each.value.repository
+        priority   = each.value.priority
+      }
+    }
+  }
+
+  # Create the remote docker repository without credentials
+  dynamic "remote_repository_config" {
+    for_each = each.value.mode == "REMOTE_REPOSITORY" && (
+      each.value.remote_repository_config_docker.username_password_credentials_username == "" ||
+      each.value.remote_repository_config_docker.username_password_credentials_password_secret_version == ""
+    ) ? each.value.remote_repository_config : {}
+
+    content {
+      description = each.value.description
+      docker_repository {
+        public_repository = each.value.public_repository
+      }
+    }
+  }
+
+  # Create the remote docker repository with credentials
+  dynamic "remote_repository_config" {
+    for_each = each.value.mode == "REMOTE_REPOSITORY" && (
+      each.value.remote_repository_config_docker.username_password_credentials_username != "" &&
+      each.value.remote_repository_config_docker.username_password_credentials_password_secret_version != ""
+    ) ? each.value.remote_repository_config : {}
+
+    content {
+      description = each.value.description
+
+      docker_repository {
+        public_repository = each.value.public_repository
+      }
+
+      upstream_credentials {
+        username_password_credentials {
+          username                = each.value.remote_repository_config_docker.username_password_credentials_username
+          password_secret_version = each.value.remote_repository_config_docker.username_password_credentials_password_secret_version
+        }
+      }
+    }
+  }
+
+  format      = each.value.format
+  description = each.value.description
 }
 
 resource "google_artifact_registry_repository_iam_member" "member" {
