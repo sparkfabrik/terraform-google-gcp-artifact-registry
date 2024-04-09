@@ -27,10 +27,10 @@ This module is provided without any kind of warranty and is GPL3 licensed.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_artifact_registry_listers"></a> [artifact\_registry\_listers](#input\_artifact\_registry\_listers) | List of principals that can list Artifact Registry repositories. | `list(string)` | `[]` | no |
-| <a name="input_artifact_registry_listers_custom_role_name"></a> [artifact\_registry\_listers\_custom\_role\_name](#input\_artifact\_registry\_listers\_custom\_role\_name) | Name of the custom role for Artifact Registry listers. | `string` | `"custom.artifactRegistryListers"` | no |
+| <a name="input_artifact_registry_listers_custom_role_name"></a> [artifact\_registry\_listers\_custom\_role\_name](#input\_artifact\_registry\_listers\_custom\_role\_name) | Name of the custom role for Artifact Registry listers. | `string` | `"custom.artifactRegistryLister"` | no |
 | <a name="input_default_location"></a> [default\_location](#input\_default\_location) | The default location for the Artifact Registry repositories. | `string` | `"europe-west1"` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID that hosts the Artifact Registry. | `string` | n/a | yes |
-| <a name="input_repositories"></a> [repositories](#input\_repositories) | List of Artifact Registry repositories to create. | <pre>map(object({<br>    description = string<br>    format      = optional(string, "DOCKER")<br>    readers     = optional(list(string), [])<br>    writers     = optional(list(string), [])<br>    location    = optional(string, "")<br>  }))</pre> | n/a | yes |
+| <a name="input_repositories"></a> [repositories](#input\_repositories) | List of Artifact Registry repositories to create. | <pre>map(object({<br>    description = string<br>    format      = optional(string, "DOCKER")<br>    mode        = optional(string, "STANDARD_REPOSITORY")<br>    readers     = optional(list(string), [])<br>    writers     = optional(list(string), [])<br>    location    = optional(string, "")<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 

@@ -38,6 +38,7 @@ resource "google_artifact_registry_repository" "repositories" {
 
   project       = var.project_id
   repository_id = each.key
+  mode          = each.value.mode
   location      = each.value.location != "" ? each.value.location : var.default_location
   format        = each.value.format
   description   = each.value.description

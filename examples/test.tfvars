@@ -13,6 +13,7 @@ artifact_repositories = {
   },
   "project-2-images" = {
     description = "Docker images repository 2"
+    mode        = "VIRTUAL_REPOSITORY"
     readers = [
       "group:dev-team-2@example.com"
     ]
