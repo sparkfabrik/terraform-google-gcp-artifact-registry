@@ -52,27 +52,9 @@ resource "google_artifact_registry_repository" "repositories" {
     }
   }
 
-  # Create the remote docker repository without credentials
-  dynamic "remote_repository_config" {
-    for_each = each.value.mode == "REMOTE_REPOSITORY" && (
-      each.value.remote_repository_config_docker.username_password_credentials_username == "" ||
-      each.value.remote_repository_config_docker.username_password_credentials_password_secret_version == ""
-    ) ? each.value.remote_repository_config_docker : {}
 
-    content {
-      description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
-      docker_repository {
-        public_repository = remote_repository_config.value.public_repository
-      }
-    }
-  }
-
-  # Create the remote docker repository with credentials
   dynamic "remote_repository_config" {
-    for_each = each.value.mode == "REMOTE_REPOSITORY" && (
-      each.value.remote_repository_config_docker.username_password_credentials_username != "" &&
-      each.value.remote_repository_config_docker.username_password_credentials_password_secret_version != ""
-    ) ? each.value.remote_repository_config_docker : {}
+    for_each = each.value.mode == "REMOTE_REPOSITORY" ? each.value.remote_repository_config_docker : {}
 
     content {
       description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
@@ -81,10 +63,13 @@ resource "google_artifact_registry_repository" "repositories" {
         public_repository = remote_repository_config.value.public_repository
       }
 
-      upstream_credentials {
-        username_password_credentials {
-          username                = remote_repository_config.value.remote_repository_config_docker.username_password_credentials_username
-          password_secret_version = remote_repository_config.value.remote_repository_config_docker.username_password_credentials_password_secret_version
+      dynamic "upstream_credentials" {
+        for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? remote_repository_config.value : {}
+        content {
+          username_password_credentials {
+            username                = upstream_credentials.value.username_password_credentials_username
+            password_secret_version = upstream_credentials.value.username_password_credentials_password_secret_version
+          }
         }
       }
     }
