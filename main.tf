@@ -43,6 +43,7 @@ resource "google_artifact_registry_repository" "repositories" {
 
   dynamic "virtual_repository_config" {
     for_each = each.value.mode == "VIRTUAL_REPOSITORY" ? each.value.virtual_repository_config : {}
+
     content {
       upstream_policies {
         id         = virtual_repository_config.key
@@ -65,6 +66,7 @@ resource "google_artifact_registry_repository" "repositories" {
 
       dynamic "upstream_credentials" {
         for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? [remote_repository_config.value] : []
+
         content {
           username_password_credentials {
             username                = upstream_credentials.value.username_password_credentials_username
