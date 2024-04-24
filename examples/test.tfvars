@@ -34,8 +34,8 @@ artifact_repositories = {
     description = "Docker images repository 3"
     mode        = "REMOTE_REPOSITORY"
     remote_repository_config_docker = {
-      description       = "Docker images repository 3"
-      public_repository = "DOCKER_HUB"
+      description           = "Docker images repository 3"
+      custom_repository_uri = "https://registry-1.docker.io"
     }
     readers = [
       "group:dev-team-2@example.com"

@@ -61,8 +61,12 @@ resource "google_artifact_registry_repository" "repositories" {
       description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
 
       docker_repository {
-        public_repository = remote_repository_config.value.public_repository
+        custom_repository {
+          uri = remote_repository_config.value.custom_repository_uri
+        }
       }
+
+      disable_upstream_validation = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? true : false
 
       dynamic "upstream_credentials" {
         for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? [remote_repository_config.value] : []

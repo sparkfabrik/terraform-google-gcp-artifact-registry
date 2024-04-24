@@ -22,7 +22,7 @@ variable "repositories" {
     })), null)
     remote_repository_config_docker = optional(object({
       description                                           = optional(string, "")
-      public_repository                                     = string
+      custom_repository_uri                                 = string
       username_password_credentials_username                = optional(string, "")
       username_password_credentials_password_secret_version = optional(string, "")
     }), null)
@@ -31,21 +31,6 @@ variable "repositories" {
     location = optional(string, "")
   }))
   description = "List of Artifact Registry repositories to create."
-
-  # validation {
-  #   condition     = contains(["STANDARD_REPOSITORY", "VIRTUAL_REPOSITORY", "REMOTE_REPOSITORY"], var.repositories[each.key].mode)
-  #   error_message = "Mode must be one of 'STANDARD_REPOSITORY', 'VIRTUAL_REPOSITORY', or 'REMOTE_REPOSITORY'."
-  # }
-
-  # validation {
-  #   condition     = var.repositories[each.key].mode == "VIRTUAL_REPOSITORY" && var.repositories[each.key].virtual_repository_config != null
-  #   error_message = "value of 'virtual_repository_config' must be set for 'VIRTUAL_REPOSITORY' mode."
-  # }
-
-  # validation {
-  #   condition     = var.repositories[each.key].mode == "REMOTE_REPOSITORY" && var.repositories[each.key].remote_repository_config != null
-  #   error_message = "value of 'remote_repository_config' must be set for 'REMOTE_REPOSITORY' mode."
-  # }
 }
 
 variable "artifact_registry_listers_custom_role_name" {
