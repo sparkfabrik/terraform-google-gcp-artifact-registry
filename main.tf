@@ -36,10 +36,11 @@ locals {
 resource "google_artifact_registry_repository" "repositories" {
   for_each = var.repositories
 
-  project       = var.project_id
-  repository_id = each.key
-  mode          = each.value.mode
-  location      = each.value.location != "" ? each.value.location : var.default_location
+  project                = var.project_id
+  repository_id          = each.key
+  mode                   = each.value.mode
+  location               = each.value.location != "" ? each.value.location : var.default_location
+  cleanup_policy_dry_run = each.value.cleanup_policy_dry_run
 
   dynamic "virtual_repository_config" {
     for_each = each.value.mode == "VIRTUAL_REPOSITORY" ? each.value.virtual_repository_config : {}
@@ -78,6 +79,14 @@ resource "google_artifact_registry_repository" "repositories" {
           }
         }
       }
+    }
+  }
+
+  dynamic "docker_config" {
+    for_each = each.value.format == "DOCKER" ? [docker_immutable_tags] : []
+
+    content {
+      immutable_tags = docker_config.value
     }
   }
 

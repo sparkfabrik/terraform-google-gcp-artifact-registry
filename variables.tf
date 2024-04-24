@@ -13,9 +13,11 @@ variable "default_location" {
 # Artifact Registry repositories.
 variable "repositories" {
   type = map(object({
-    description = string
-    format      = optional(string, "DOCKER")
-    mode        = optional(string, "STANDARD_REPOSITORY")
+    description            = string
+    format                 = optional(string, "DOCKER")
+    mode                   = optional(string, "STANDARD_REPOSITORY")
+    cleanup_policy_dry_run = optional(bool, true)
+    docker_immutable_tags  = optional(bool, true)
     virtual_repository_config = optional(map(object({
       repository = string
       priority   = optional(number, 0)
