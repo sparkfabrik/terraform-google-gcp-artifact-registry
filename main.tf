@@ -83,7 +83,7 @@ resource "google_artifact_registry_repository" "repositories" {
   }
 
   dynamic "docker_config" {
-    for_each = each.value.format == "DOCKER" ? [docker_immutable_tags] : []
+    for_each = each.value.format == "DOCKER" ? [each.value.docker_immutable_tags] : []
 
     content {
       immutable_tags = docker_config.value
