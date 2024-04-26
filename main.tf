@@ -67,7 +67,7 @@ resource "google_artifact_registry_repository" "repositories" {
         }
       }
 
-      disable_upstream_validation = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? true : false
+      disable_upstream_validation = remote_repository_config.value.disable_upstream_validation
 
       dynamic "upstream_credentials" {
         for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? [remote_repository_config.value] : []

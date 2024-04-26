@@ -25,6 +25,7 @@ variable "repositories" {
     remote_repository_config_docker = optional(object({
       description                                           = optional(string, "")
       custom_repository_uri                                 = string
+      disable_upstream_validation                           = optional(bool, false)
       username_password_credentials_username                = optional(string, "")
       username_password_credentials_password_secret_version = optional(string, "")
     }), null)
