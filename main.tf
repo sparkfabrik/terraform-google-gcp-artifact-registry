@@ -1,5 +1,7 @@
 # Enable Artifact Registry API
 resource "google_project_service" "project" {
+  count = var.enable_api ? 1 : 0
+
   project = var.project_id
   service = "artifactregistry.googleapis.com"
 
@@ -82,7 +84,7 @@ resource "google_artifact_registry_repository" "repositories" {
   }
 
   dynamic "docker_config" {
-    for_each = each.value.format == "DOCKER" ? [each.value.docker_immutable_tags] : []
+    for_each = each.value.format == "DOCKER" && each.value.mode == "STANDARD_REPOSITORY" ? [each.value.docker_immutable_tags] : []
 
     content {
       immutable_tags = docker_config.value
@@ -105,7 +107,7 @@ resource "google_artifact_registry_repository_iam_member" "member" {
 
 # Create a custom role that allows the list of the Artifact Registry repositories
 resource "google_project_iam_custom_role" "artifact_registry_lister" {
-  count = length(var.artifact_registry_listers)
+  count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
   role_id     = var.artifact_registry_listers_custom_role_name
   title       = "Artifact Registry Lister"
@@ -113,13 +115,14 @@ resource "google_project_iam_custom_role" "artifact_registry_lister" {
   permissions = ["artifactregistry.repositories.list"]
 }
 
-# Add the custom role to the group staff@sparkfabrik
+# Add the custom role to the pricipals defined in the artifact_registry_listers variable
 resource "google_project_iam_binding" "artifact_registry_lister" {
-  count = length(var.artifact_registry_listers)
+  count = length(var.artifact_registry_listers) > 0 ? 1 : 0
 
   project = var.project_id
   role    = local.custom_role_artifact_registry_lister_id
   members = var.artifact_registry_listers
+
   depends_on = [
     google_project_iam_custom_role.artifact_registry_lister,
   ]
