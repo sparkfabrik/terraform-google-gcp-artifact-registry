@@ -26,8 +26,8 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ### Changed
 
-- FEAT: Create an artifact registry repository in remote or virtual mode
-- FEAT: Upgrade `hashicorp/google` provider to `>= 5.26.0`
+- FEATURE: Create an artifact registry repository in remote or virtual mode
+- FEATURE: Upgrade `hashicorp/google` provider to `>= 5.26.0`
 
 ## [0.2.1] - 2023-05-19
 
