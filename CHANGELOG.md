@@ -20,6 +20,15 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.3.0] - 2024-05-02
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.2.1...0.3.0)
+
+### Changed
+
+- FEAT: Create an artifact registry repository in remote or virtual mode
+- FEAT: Upgrade `hashicorp/google` provider to `>= 5.26.0`
+
 ## [0.2.1] - 2023-05-19
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.2.0...0.2.1)

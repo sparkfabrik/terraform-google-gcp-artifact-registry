@@ -54,7 +54,6 @@ resource "google_artifact_registry_repository" "repositories" {
     }
   }
 
-
   dynamic "remote_repository_config" {
     for_each = each.value.mode == "REMOTE_REPOSITORY" ? [each.value.remote_repository_config_docker] : []
 

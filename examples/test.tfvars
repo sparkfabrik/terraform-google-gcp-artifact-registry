@@ -1,6 +1,6 @@
 project_id = "my-sample-project-id"
 
-artifact_repositories = {
+repositories = {
   "project-images" = {
     description = "Docker images repository"
     readers = [
