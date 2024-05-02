@@ -20,6 +20,13 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.4.0] - 2024-05-02
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.3.0...0.4.0)
+
+- FEATURE: add the `enable_api` variable to enable the Artifact Registry API only if needed.
+- FIX: enable the `docker_config` block if the `format` is `DOCKER` and the `mode` is `STANDARD_REPOSITORY`.
+
 ## [0.3.0] - 2024-05-02
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.2.1...0.3.0)
