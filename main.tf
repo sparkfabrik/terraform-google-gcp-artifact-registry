@@ -36,11 +36,61 @@ locals {
 resource "google_artifact_registry_repository" "repositories" {
   for_each = var.repositories
 
-  project       = var.project_id
-  repository_id = each.key
-  location      = each.value.location != "" ? each.value.location : var.default_location
-  format        = each.value.format
-  description   = each.value.description
+  project                = var.project_id
+  repository_id          = each.key
+  mode                   = each.value.mode
+  location               = each.value.location != "" ? each.value.location : var.default_location
+  cleanup_policy_dry_run = each.value.cleanup_policy_dry_run
+
+  dynamic "virtual_repository_config" {
+    for_each = each.value.mode == "VIRTUAL_REPOSITORY" ? each.value.virtual_repository_config : {}
+
+    content {
+      upstream_policies {
+        id         = virtual_repository_config.key
+        repository = virtual_repository_config.value.repository
+        priority   = virtual_repository_config.value.priority
+      }
+    }
+  }
+
+  dynamic "remote_repository_config" {
+    for_each = each.value.mode == "REMOTE_REPOSITORY" ? [each.value.remote_repository_config_docker] : []
+
+    content {
+      description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
+
+      docker_repository {
+        custom_repository {
+          uri = remote_repository_config.value.custom_repository_uri
+        }
+      }
+
+      disable_upstream_validation = remote_repository_config.value.disable_upstream_validation
+
+      dynamic "upstream_credentials" {
+        for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? [remote_repository_config.value] : []
+
+        content {
+          username_password_credentials {
+            username                = upstream_credentials.value.username_password_credentials_username
+            password_secret_version = upstream_credentials.value.username_password_credentials_password_secret_version
+          }
+        }
+      }
+    }
+  }
+
+  dynamic "docker_config" {
+    for_each = each.value.format == "DOCKER" ? [each.value.docker_immutable_tags] : []
+
+    content {
+      immutable_tags = docker_config.value
+    }
+  }
+
+  format      = each.value.format
+  description = each.value.description
 }
 
 resource "google_artifact_registry_repository_iam_member" "member" {
