@@ -5,4 +5,5 @@ variable "repositories" {
 
 variable "project_id" {
   description = "The GCP project ID that hosts the Artifact Registry."
+  type        = string
 }
