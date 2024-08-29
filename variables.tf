@@ -23,7 +23,22 @@ variable "repositories" {
     format                 = optional(string, "DOCKER")
     mode                   = optional(string, "STANDARD_REPOSITORY")
     cleanup_policy_dry_run = optional(bool, true)
-    docker_immutable_tags  = optional(bool, true)
+    cleanup_policies = optional(map(object({
+      action = optional(string, ""),
+      condition = optional(object({
+        tag_state             = optional(string),
+        tag_prefixes          = optional(list(string), []),
+        version_name_prefixes = optional(list(string), []),
+        package_name_prefixes = optional(list(string), []),
+        older_than            = optional(string),
+        newer_than            = optional(string),
+      }), {}),
+      most_recent_versions = optional(object({
+        package_name_prefixes = optional(list(string), []),
+        keep_count            = optional(number, 0)
+      }), {})
+    })), {})
+    docker_immutable_tags = optional(bool, true)
     virtual_repository_config = optional(map(object({
       repository = string
       priority   = optional(number, 0)
@@ -39,7 +54,23 @@ variable "repositories" {
     writers  = optional(list(string), [])
     location = optional(string, "")
   }))
+
   description = "List of Artifact Registry repositories to create."
+
+  validation {
+    condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : contains(["DELETE", "KEEP"], policy.action)])
+    error_message = "Cleanup policy action must be either DELETE or KEEP."
+  }
+
+  validation {
+    condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : policy.condition.tag_state == null || contains(["ANY", "TAGGED", "UNTAGGED"], policy.condition.tag_state)])
+    error_message = "Tag state must be ANY, TAGGED, or UNTAGGED."
+  }
+
+  validation {
+    condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : policy.most_recent_versions == {} || policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count >= 0])
+    error_message = "Keep count must be a non-negative number."
+  }
 }
 
 variable "artifact_registry_listers_custom_role_name" {
