@@ -20,6 +20,10 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+### Added
+
+- FEATURE: add the cleanup policies management for the repositories.
+
 ## [0.4.0] - 2024-05-02
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.3.0...0.4.0)
