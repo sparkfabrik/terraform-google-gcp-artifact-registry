@@ -22,9 +22,9 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [0.6.0] - 2024-10-09
 
-- FEATURE: add support for mirror public registry (Docker Hub) if `custom_repository_uri` is `DOCKER_HUB`
-
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.5.0...0.6.0)
+
+- FEATURE: add support for mirror public registry (Docker Hub) if `custom_repository_uri` is `DOCKER_HUB`
 
 ## [0.5.0] - 2024-08-29
 
