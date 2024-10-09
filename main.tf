@@ -90,9 +90,19 @@ resource "google_artifact_registry_repository" "repositories" {
     content {
       description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
 
-      docker_repository {
-        custom_repository {
-          uri = remote_repository_config.value.custom_repository_uri
+      dynamic "docker_repository" {
+        for_each = remote_repository_config.value.custom_repository_uri != "DOCKER_HUB" ? [remote_repository_config.value] : []
+        content {
+          custom_repository {
+            uri = remote_repository_config.value.custom_repository_uri
+          }
+        }
+      }
+
+      dynamic "docker_repository" {
+        for_each = remote_repository_config.value.custom_repository_uri == "DOCKER_HUB" ? [remote_repository_config.value] : []
+        content {
+          public_repository = "DOCKER_HUB"
         }
       }
 
