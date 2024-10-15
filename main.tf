@@ -42,7 +42,7 @@ locals {
           username_password_credentials_username                = config.username_password_credentials_username != "" ? config.username_password_credentials_username : null
         }
         if contains(keys(config), "username_password_credentials_password_secret_version")
-      }[0]
+      }
     }
     if repository.mode == "REMOTE_REPOSITORY"
   }
