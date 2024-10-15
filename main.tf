@@ -35,14 +35,9 @@ locals {
   custom_role_artifact_registry_lister_id = "projects/${var.project_id}/roles/${var.artifact_registry_listers_custom_role_name}"
   remote_repositories = {
     for repository_id, repository in var.repositories : repository_id => {
-      repository_id = repository_id
-      credentials = {
-        for config in [repository.remote_repository_config_docker] : config => {
-          username_password_credentials_password_secret_version = config.username_password_credentials_password_secret_version != "" ? config.username_password_credentials_password_secret_version : null
-          username_password_credentials_username                = config.username_password_credentials_username != "" ? config.username_password_credentials_username : null
-        }
-        if contains(keys(config), "username_password_credentials_password_secret_version")
-      }
+      repository_id                                         = repository_id
+      username_password_credentials_password_secret_version = lookup(repository, "username_password_credentials_password_secret_version", null)
+      username_password_credentials_username                = lookup(repository, "username_password_credentials_username", null)
     }
     if repository.mode == "REMOTE_REPOSITORY"
   }
@@ -51,9 +46,9 @@ locals {
 data "google_secret_manager_secret" "remote_repository_secrets" {
   for_each = {
     for key, value in local.remote_repositories : key => value
-    if value.credentials.username_password_credentials_password_secret_version != ""
+    if value.username_password_credentials_password_secret_version != ""
   }
-  secret_id = each.value.credentials.username_password_credentials_password_secret_version
+  secret_id = each.value.username_password_credentials_password_secret_version
 }
 
 resource "google_artifact_registry_repository" "repositories" {
