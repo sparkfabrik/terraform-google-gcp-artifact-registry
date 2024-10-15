@@ -49,6 +49,7 @@ data "google_secret_manager_secret_version" "remote_repository_secrets" {
     for key, value in local.remote_repositories : key => value
     if value.username_password_credentials_username != null && value.username_password_credentials_password_secret_name != null
   }
+  project = var.project_id
   secret  = each.value.username_password_credentials_password_secret_name
   version = each.value.username_password_credentials_password_secret_version
 }
