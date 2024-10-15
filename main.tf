@@ -41,7 +41,7 @@ locals {
           username_password_credentials_password_secret_version = config.username_password_credentials_password_secret_version != "" ? config.username_password_credentials_password_secret_version : null
           username_password_credentials_username                = config.username_password_credentials_username != "" ? config.username_password_credentials_username : null
         }
-        if config.username_password_credentials_password_secret_version != ""
+        if contains(keys(config), "username_password_credentials_password_secret_version")
       }[0]
     }
     if repository.remote_repository_config_docker != ""
