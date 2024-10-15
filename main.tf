@@ -33,6 +33,20 @@ locals {
     }
   }
   custom_role_artifact_registry_lister_id = "projects/${var.project_id}/roles/${var.artifact_registry_listers_custom_role_name}"
+  remote_repositories = {
+    for repository_id, repository in var.repositories : repository_id => {
+      repository_id                                         = repository_id
+      username_password_credentials_password_secret_version = repository.username_password_credentials_password_secret_version
+      username_password_credentials_username                = repository.username_password_credentials_username
+    }
+    if repository.mode == "REMOTE_REPOSITORY" && repository.username_password_credentials_password_secret_version != ""
+  }
+}
+
+data "google_secret_manager_secret" "remote_repository_secrets" {
+  for_each = local.remote_repositories
+
+  secret_id = each.value.username_password_credentials_password_secret_version
 }
 
 resource "google_artifact_registry_repository" "repositories" {
@@ -114,7 +128,7 @@ resource "google_artifact_registry_repository" "repositories" {
         content {
           username_password_credentials {
             username                = upstream_credentials.value.username_password_credentials_username
-            password_secret_version = upstream_credentials.value.username_password_credentials_password_secret_version
+            password_secret_version = data.google_secret_manager_secret.remote_repository_secrets[upstream_credentials.value.repository_id].name
           }
         }
       }
