@@ -20,6 +20,12 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.7.0] - 2024-10-15
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.6.0...0.7.0)
+
+- BREAKING: add support for GCP secret as password for remote repositories. Break backwards compatibility if using `username_password_credentials_password_secret_version` as it now stores the secret version (not the name).
+
 ## [0.6.0] - 2024-10-09
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.5.0...0.6.0)
