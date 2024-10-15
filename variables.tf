@@ -48,6 +48,7 @@ variable "repositories" {
       custom_repository_uri                                 = string
       disable_upstream_validation                           = optional(bool, false)
       username_password_credentials_username                = optional(string, "")
+      username_password_credentials_password_secret_name    = optional(string, "")
       username_password_credentials_password_secret_version = optional(string, "")
     }), null)
     readers  = optional(list(string), [])
