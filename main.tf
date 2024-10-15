@@ -39,7 +39,10 @@ locals {
       username_password_credentials_password_secret_version = repository.remote_repository_config_docker.username_password_credentials_password_secret_version != "" ? repository.username_password_credentials_password_secret_version : null
       username_password_credentials_username                = repository.remote_repository_config_docker.username_password_credentials_username != "" ? repository.username_password_credentials_username : null
     }
-    if repository.mode == "REMOTE_REPOSITORY" && repository.remote_repository_config_docker != null
+    if repository.mode == "REMOTE_REPOSITORY"
+    && repository.remote_repository_config_docker != null
+    && repository.remote_repository_config_docker.username_password_credentials_username != ""
+    && repository.remote_repository_config_docker.username_password_credentials_password_secret_version != ""
   }
 }
 
