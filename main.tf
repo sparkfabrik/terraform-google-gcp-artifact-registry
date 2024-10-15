@@ -47,7 +47,8 @@ locals {
 data "google_secret_manager_secret_version" "remote_repository_secrets" {
   for_each = {
     for key, value in local.remote_repositories : key => value
-    if alltrue([value.username_password_credentials_username != null, value.username_password_credentials_password_secret_name != null])
+    #if alltrue([value.username_password_credentials_username != null, value.username_password_credentials_password_secret_name != null])
+    if value.username_password_credentials_password_secret_name != null
   }
   project = var.project_id
   secret  = each.value.username_password_credentials_password_secret_name
