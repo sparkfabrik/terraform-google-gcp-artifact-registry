@@ -36,16 +36,18 @@ locals {
   remote_repositories = {
     for repository_id, repository in var.repositories : repository_id => {
       repository_id                                         = repository_id
-      username_password_credentials_password_secret_version = repository.username_password_credentials_password_secret_version
-      username_password_credentials_username                = repository.username_password_credentials_username
+      username_password_credentials_password_secret_version = repository.username_password_credentials_password_secret_version != "" ? repository.username_password_credentials_password_secret_version : null
+      username_password_credentials_username                = repository.username_password_credentials_username != "" ? repository.username_password_credentials_username : null
     }
     if repository.remote_repository_config_docker != ""
   }
 }
 
 data "google_secret_manager_secret" "remote_repository_secrets" {
-  for_each = local.remote_repositories
-
+  for_each = {
+    for key, value in local.remote_repositories : key => value
+    if value.username_password_credentials_password_secret_version != ""
+  }
   secret_id = each.value.username_password_credentials_password_secret_version
 }
 
