@@ -36,8 +36,8 @@ locals {
   remote_repositories = {
     for repository_id, repository in var.repositories : repository_id => {
       repository_id                                         = repository_id
-      username_password_credentials_password_secret_version = lookup(repository, "username_password_credentials_password_secret_version", null)
-      username_password_credentials_username                = lookup(repository, "username_password_credentials_username", null)
+      username_password_credentials_password_secret_version = lookup(repository.remote_repository_config_docker, "username_password_credentials_password_secret_version", null)
+      username_password_credentials_username                = lookup(repository.remote_repository_config_docker, "username_password_credentials_username", null)
     }
     if repository.mode == "REMOTE_REPOSITORY"
   }
@@ -130,7 +130,7 @@ resource "google_artifact_registry_repository" "repositories" {
         content {
           username_password_credentials {
             username                = upstream_credentials.value.username_password_credentials_username
-            password_secret_version = "projects/${var.project_id}/secrets/${upstream_credentials.value.username_password_credentials_password_secret_version}/versions/latest"
+            password_secret_version = data.google_secret_manager_secret.remote_repository_secrets[each.key].name
           }
         }
       }
