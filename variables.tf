@@ -48,6 +48,7 @@ variable "repositories" {
       custom_repository_uri                                 = string
       disable_upstream_validation                           = optional(bool, false)
       username_password_credentials_username                = optional(string, "")
+      username_password_credentials_password_secret_name    = optional(string, "")
       username_password_credentials_password_secret_version = optional(string, "")
     }), null)
     readers  = optional(list(string), [])
@@ -70,6 +71,11 @@ variable "repositories" {
   validation {
     condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : policy.most_recent_versions == {} || policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count >= 0])
     error_message = "Keep count must be a non-negative number."
+  }
+
+  validation {
+    condition     = alltrue([for repo in var.repositories : repo.mode == "REMOTE_REPOSITORY" ? lookup(repo, "remote_repository_config_docker", null) != null : true])
+    error_message = "Remote repository configuration is required for the REMOTE_REPOSITORY mode."
   }
 }
 

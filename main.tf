@@ -33,6 +33,26 @@ locals {
     }
   }
   custom_role_artifact_registry_lister_id = "projects/${var.project_id}/roles/${var.artifact_registry_listers_custom_role_name}"
+  remote_repositories = {
+    for repository_id, repository in var.repositories : repository_id => {
+      repository_id                                         = repository_id
+      username_password_credentials_username                = lookup(repository.remote_repository_config_docker, "username_password_credentials_username", "")
+      username_password_credentials_password_secret_name    = lookup(repository.remote_repository_config_docker, "username_password_credentials_password_secret_name", "")
+      username_password_credentials_password_secret_version = lookup(repository.remote_repository_config_docker, "username_password_credentials_password_secret_version", "latest")
+    }
+    if repository.mode == "REMOTE_REPOSITORY"
+  }
+}
+
+data "google_secret_manager_secret_version" "remote_repository_secrets" {
+  for_each = {
+    for key, value in local.remote_repositories : key => value
+    if alltrue([value.username_password_credentials_username != "", value.username_password_credentials_password_secret_name != ""])
+  }
+
+  project = var.project_id
+  secret  = each.value.username_password_credentials_password_secret_name
+  version = each.value.username_password_credentials_password_secret_version
 }
 
 resource "google_artifact_registry_repository" "repositories" {
@@ -109,12 +129,12 @@ resource "google_artifact_registry_repository" "repositories" {
       disable_upstream_validation = remote_repository_config.value.disable_upstream_validation
 
       dynamic "upstream_credentials" {
-        for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_version != "" ? [remote_repository_config.value] : []
+        for_each = remote_repository_config.value.username_password_credentials_username != "" && remote_repository_config.value.username_password_credentials_password_secret_name != "" ? [remote_repository_config.value] : []
 
         content {
           username_password_credentials {
             username                = upstream_credentials.value.username_password_credentials_username
-            password_secret_version = upstream_credentials.value.username_password_credentials_password_secret_version
+            password_secret_version = data.google_secret_manager_secret_version.remote_repository_secrets[each.key].name
           }
         }
       }
