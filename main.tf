@@ -43,6 +43,9 @@ locals {
     if repository.mode == "REMOTE_REPOSITORY"
   }
 }
+data "google_project" "project" {
+  project_id = var.project_id
+}
 
 data "google_secret_manager_secret_version" "remote_repository_secrets" {
   for_each = {
@@ -134,7 +137,7 @@ resource "google_artifact_registry_repository" "repositories" {
         content {
           username_password_credentials {
             username                = upstream_credentials.value.username_password_credentials_username
-            password_secret_version = "projects/${var.project_id}/secrets/${upstream_credentials.value.username_password_credentials_password_secret_name}/versions/${upstream_credentials.value.username_password_credentials_password_secret_version}"
+            password_secret_version = "projects/${data.google_project.project.number}/secrets/${upstream_credentials.value.username_password_credentials_password_secret_name}/versions/${upstream_credentials.value.username_password_credentials_password_secret_version}"
           }
         }
       }
