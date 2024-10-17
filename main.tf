@@ -134,7 +134,7 @@ resource "google_artifact_registry_repository" "repositories" {
         content {
           username_password_credentials {
             username                = upstream_credentials.value.username_password_credentials_username
-            password_secret_version = data.google_secret_manager_secret_version.remote_repository_secrets[each.key].name
+            password_secret_version = "projects/${var.project_id}/secrets/${data.google_secret_manager_secret_version.remote_repository_secrets[each.key].secret}/versions/${upstream_credentials.value.username_password_credentials_password_secret_version}"
           }
         }
       }
