@@ -20,6 +20,12 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.7.1] - 2024-10-17
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.7.0...0.7.1)
+
+- FIX: use the value of `username_password_credentials_password_secret_version` instead of data output to keep `latest` as version for secret.
+
 ## [0.7.0] - 2024-10-15
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.6.0...0.7.0)
