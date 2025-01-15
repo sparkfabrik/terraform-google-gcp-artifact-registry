@@ -20,6 +20,14 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.8.0] - 2024-10-17
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.7.1...0.8.0)
+
+### Changed
+
+- FEAT: Add labels to artifact registry repositories
+
 ## [0.7.1] - 2024-10-17
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.7.0...0.7.1)
