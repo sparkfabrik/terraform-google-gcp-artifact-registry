@@ -63,6 +63,7 @@ resource "google_artifact_registry_repository" "repositories" {
   mode                   = each.value.mode
   location               = each.value.location != "" ? each.value.location : var.default_location
   cleanup_policy_dry_run = each.value.cleanup_policy_dry_run
+  labels                 = merge(var.default_labels, each.value.labels)
 
   dynamic "cleanup_policies" {
     for_each = each.value.cleanup_policies

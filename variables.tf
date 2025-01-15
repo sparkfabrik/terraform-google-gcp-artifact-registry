@@ -54,6 +54,7 @@ variable "repositories" {
     readers  = optional(list(string), [])
     writers  = optional(list(string), [])
     location = optional(string, "")
+    labels   = optional(map(string), {})
   }))
 
   description = "List of Artifact Registry repositories to create."
@@ -89,4 +90,12 @@ variable "artifact_registry_listers" {
   type        = list(string)
   description = "List of principals that can list Artifact Registry repositories."
   default     = []
+}
+
+variable "default_labels" {
+  type        = map(string)
+  description = "Default labels to apply to all Artifact Registry resources."
+  default = {
+    "managed-by" = "terraform"
+  }
 }
