@@ -26,6 +26,7 @@ This module is provided without any kind of warranty and is GPL3 licensed.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_additional_labels"></a> [additional\_labels](#input\_additional\_labels) | Additional labels to apply to all Artifact Registry resources. This variable will be merged with the default\_labels variable and the labels defined in the repositories variable. | `map(string)` | `{}` | no |
 | <a name="input_artifact_registry_listers"></a> [artifact\_registry\_listers](#input\_artifact\_registry\_listers) | List of principals that can list Artifact Registry repositories. | `list(string)` | `[]` | no |
 | <a name="input_artifact_registry_listers_custom_role_name"></a> [artifact\_registry\_listers\_custom\_role\_name](#input\_artifact\_registry\_listers\_custom\_role\_name) | Name of the custom role for Artifact Registry listers. | `string` | `"custom.artifactRegistryLister"` | no |
 | <a name="input_default_labels"></a> [default\_labels](#input\_default\_labels) | Default labels to apply to all Artifact Registry resources. | `map(string)` | <pre>{<br>  "managed-by": "terraform"<br>}</pre> | no |
