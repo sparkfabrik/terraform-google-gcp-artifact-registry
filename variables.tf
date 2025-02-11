@@ -99,3 +99,9 @@ variable "default_labels" {
     "managed-by" = "terraform"
   }
 }
+
+variable "additional_labels" {
+  type        = map(string)
+  description = "Additional labels to apply to all Artifact Registry resources. This variable will be merged with the default_labels variable and the labels defined in the repositories variable."
+  default     = {}
+}

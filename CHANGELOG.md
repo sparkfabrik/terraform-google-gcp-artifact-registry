@@ -29,6 +29,7 @@ Following semver, any non backwards compatible feature implies that the next rel
 ### Changed
 
 - BREAKING: The `docker_immutable_tags` variable (`docker_config.immutable_tags` configuration of the `google_artifact_registry_repository` resource) has been changed to `false` by default. This is a breaking change if you were relying on the previous default value of true.
+- FEAT: add `additional_labels` variable to add custom labels to the artifact registry repositories.
 
 ## [0.8.0] - 2024-10-17
 
