@@ -38,7 +38,7 @@ variable "repositories" {
         keep_count            = optional(number, 0)
       }), {})
     })), {})
-    docker_immutable_tags = optional(bool, true)
+    docker_immutable_tags = optional(bool, false)
     virtual_repository_config = optional(map(object({
       repository = string
       priority   = optional(number, 0)

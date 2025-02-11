@@ -20,6 +20,16 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.9.0] - 2025-02-11
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.8.0...0.9.0)
+
+:warning: **This release contains breaking changes.** If you rely on the previous `docker_immutable_tags` variable default value (`true`), you must update your configuration to set it explicitly. **Now the default value is `false`.**
+
+### Changed
+
+- BREAKING: The `docker_immutable_tags` variable (`docker_config.immutable_tags` configuration of the `google_artifact_registry_repository` resource) has been changed to `false` by default. This is a breaking change if you were relying on the previous default value of true.
+
 ## [0.8.0] - 2024-10-17
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.7.1...0.8.0)
