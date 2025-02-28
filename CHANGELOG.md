@@ -20,6 +20,14 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.10.0] - 2025-02-28
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.9.0...0.10.0)
+
+### Added
+
+- FEAT: add the `repositories_data` output to expose the calculated data of the created repositories.
+
 ## [0.9.0] - 2025-02-11
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.8.0...0.9.0)

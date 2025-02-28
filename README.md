@@ -41,6 +41,7 @@ This module is provided without any kind of warranty and is GPL3 licensed.
 |------|-------------|
 | <a name="output_custom_role_artifact_registry_lister_id"></a> [custom\_role\_artifact\_registry\_lister\_id](#output\_custom\_role\_artifact\_registry\_lister\_id) | The ID of the custom role for Artifact Registry listers. The role is created only if the list of Artifact Registry listers is not empty. |
 | <a name="output_repositories"></a> [repositories](#output\_repositories) | The created Artifact Repository repositories. |
+| <a name="output_repositories_data"></a> [repositories\_data](#output\_repositories\_data) | The calculated data for the Artifact Registry repositories (registry and repository). |
 
 ## Resources
 
