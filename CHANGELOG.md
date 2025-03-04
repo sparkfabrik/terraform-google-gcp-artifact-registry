@@ -20,6 +20,14 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.10.1] - 2025-03-04
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.10.0...0.10.1)
+
+### Changed
+
+- FIX: typo `var.var.repositories` in `outputs.tf`
+
 ## [0.10.0] - 2025-02-28
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.9.0...0.10.0)
