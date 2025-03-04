@@ -5,7 +5,7 @@ output "repositories" {
 
 output "repositories_data" {
   value = {
-    for repository_name, config in var.var.repositories : name => {
+    for repository_name, config in var.repositories : repository_name => {
       registry   = "${google_artifact_registry_repository.repositories[repository_name].location}-docker.pkg.dev",
       repository = "${google_artifact_registry_repository.repositories[repository_name].project}/${repository_name}",
     }
