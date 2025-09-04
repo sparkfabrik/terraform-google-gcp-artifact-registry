@@ -72,7 +72,7 @@ resource "google_artifact_registry_repository" "repositories" {
       action = cleanup_policies.value.action
 
       dynamic "condition" {
-        for_each = cleanup_policies.value.condition != {} ? [cleanup_policies.value.condition] : []
+        for_each = cleanup_policies.value.condition != {} && cleanup_policies.value.condition.tag_state != null ? [cleanup_policies.value.condition] : []
         content {
           tag_state             = condition.value.tag_state
           tag_prefixes          = condition.value.tag_prefixes
@@ -84,7 +84,7 @@ resource "google_artifact_registry_repository" "repositories" {
       }
 
       dynamic "most_recent_versions" {
-        for_each = cleanup_policies.value.most_recent_versions != {} && cleanup_policies.value.most_recent_versions.keep_count != 0 ? [cleanup_policies.value.most_recent_versions] : []
+        for_each = cleanup_policies.value.most_recent_versions != {} && cleanup_policies.value.most_recent_versions.keep_count != null ? [cleanup_policies.value.most_recent_versions] : []
         content {
           package_name_prefixes = most_recent_versions.value.package_name_prefixes
           keep_count            = most_recent_versions.value.keep_count
