@@ -35,7 +35,7 @@ variable "repositories" {
       }), {}),
       most_recent_versions = optional(object({
         package_name_prefixes = optional(list(string), []),
-        keep_count            = optional(number, 0)
+        keep_count            = optional(number)
       }), {})
     })), {})
     docker_immutable_tags = optional(bool, false)
@@ -65,7 +65,7 @@ variable "repositories" {
   }
 
   validation {
-    condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : policy.condition.tag_state == null || contains(["ANY", "TAGGED", "UNTAGGED"], policy.condition.tag_state)])
+    condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : policy.condition.tag_state == null || contains(["ANY", "TAGGED", "UNTAGGED"], (policy.condition.tag_state == null ? "" : policy.condition.tag_state))])
     error_message = "Tag state must be ANY, TAGGED, or UNTAGGED."
   }
 
