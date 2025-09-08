@@ -72,14 +72,7 @@ variable "repositories" {
   validation {
     condition = alltrue([
       for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : 
-        try(
-          policy.most_recent_versions == {} || 
-          (
-            can(policy.most_recent_versions.keep_count) && 
-            (policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count > 0)
-          ), 
-          true
-        )
+        policy.most_recent_versions == {} || try((policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count > 0), true)
     ])
     error_message = "Keep count must be a non-negative number and greater than zero if specified."
   }
