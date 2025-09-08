@@ -35,7 +35,7 @@ variable "repositories" {
       }), {}),
       most_recent_versions = optional(object({
         package_name_prefixes = optional(list(string), []),
-        keep_count            = optional(number)
+        keep_count            = optional(number, null)
       }), {})
     })), {})
     docker_immutable_tags = optional(bool, false)
@@ -70,8 +70,18 @@ variable "repositories" {
   }
 
   validation {
-    condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : policy.most_recent_versions == {} || policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count >= 0])
-    error_message = "Keep count must be a non-negative number."
+    condition = alltrue([
+      for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : 
+        try(
+          policy.most_recent_versions == {} || 
+          (
+            can(policy.most_recent_versions.keep_count) && 
+            (policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count > 0)
+          ), 
+          true
+        )
+    ])
+    error_message = "Keep count must be a non-negative number and greater than zero if specified."
   }
 
   validation {
