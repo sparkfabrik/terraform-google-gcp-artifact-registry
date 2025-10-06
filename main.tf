@@ -10,6 +10,30 @@ resource "google_project_service" "project" {
 }
 
 locals {
+  # Default cleanup policies to be applied when enabled
+  cleanup_policies_default = {
+    # TODO: Implement default cleanup policies from spark-gke
+    # These will include:
+    # - keep-tagged-images: Keep last 5 versions
+    # - keep-protected-tags: Keep protected tags (latest, main, master, develop, stage, v1-v9)
+    # - keep-semantic-versions: Keep semantic versions (0-9. and 0-9-)
+    # - remove-old-images: Delete images older than 90 days
+  }
+
+  # Merge default and custom cleanup policies for each repository
+  repositories_final = {
+    for repository_id, repository in var.repositories : repository_id => merge(
+      repository,
+      {
+        # Merge default policies (if enabled) with custom policies
+        cleanup_policies = merge(
+          repository.cleanup_policies_enable_default ? local.cleanup_policies_default : {},
+          repository.cleanup_policies
+        )
+      }
+    )
+  }
+
   member_and_role_per_repo = {
     for item in flatten([
       for repository_id, repository in var.repositories : concat([
@@ -56,7 +80,7 @@ data "google_secret_manager_secret_version" "remote_repository_secrets" {
 }
 
 resource "google_artifact_registry_repository" "repositories" {
-  for_each = var.repositories
+  for_each = local.repositories_final
 
   project                = var.project_id
   repository_id          = each.key

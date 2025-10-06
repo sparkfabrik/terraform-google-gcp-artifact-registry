@@ -3,6 +3,15 @@ project_id = "my-sample-project-id"
 repositories = {
   "project-images" = {
     description = "Docker images repository"
+    cleanup_policies = {
+      "custom-policy" = {
+        action = "DELETE"
+        condition = {
+          tag_state  = "UNTAGGED"
+          older_than = "2592000s" # 30 days
+        }
+      }
+    }
     readers = [
       "group:dev-team@example.com"
     ]
@@ -14,6 +23,7 @@ repositories = {
   "project-2-virtual" = {
     description = "Docker images repository 2"
     mode        = "VIRTUAL_REPOSITORY"
+    cleanup_policies_enable_default = false
     virtual_repository_config = {
       "my-repository-upstream-1" = {
         repository = "projects/p1/locations/us-central1/repository/repo1"
