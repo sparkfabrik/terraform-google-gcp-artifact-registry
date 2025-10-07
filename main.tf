@@ -12,12 +12,40 @@ resource "google_project_service" "project" {
 locals {
   # Default cleanup policies to be applied when enabled
   cleanup_policies_default = {
-    # TODO: Implement default cleanup policies from spark-gke
-    # These will include:
-    # - keep-tagged-images: Keep last 5 versions
-    # - keep-protected-tags: Keep protected tags (latest, main, master, develop, stage, v1-v9)
-    # - keep-semantic-versions: Keep semantic versions (0-9. and 0-9-)
-    # - remove-old-images: Delete images older than 90 days
+    # Keep tagged images: keep the last 5 versions
+      keep-tagged-images = {
+        action = "KEEP"
+        most_recent_versions = {
+          keep_count = 5
+        }
+      }
+      # Keep protected tags always (latest, main, master, develop, stage, semantic versions with v prefix)
+      keep-protected-tags = {
+        action = "KEEP"
+        condition = {
+          tag_state    = "TAGGED"
+          tag_prefixes = ["latest", "main", "master", "develop", "stage", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
+        }
+      }
+      # Keep semantic versions without prefix (1.0, 1.0.0, 1-0-0, etc.)
+      # NOTE: GCP Artifact Registry does not support wildcard version prefixes.
+      #       The version_name_prefixes below explicitly match tags that start with a single digit (0–9)
+      #       followed by '.' or '-' (e.g: 1.0, 2-0-0). Tags with major version >= 10 (e.g: 10.0) will NOT be matched.
+      keep-semantic-versions = {
+        action = "KEEP"
+        condition = {
+          tag_state             = "TAGGED"
+          version_name_prefixes = ["0.", "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.", "0-", "1-", "2-", "3-", "4-", "5-", "6-", "7-", "8-", "9-"]
+        }
+      }
+      # Delete everything else older than 90 days
+      remove-old-images = {
+        action = "DELETE"
+        condition = {
+          tag_state  = "ANY"
+          older_than = "7776000s" # 90 days
+        }
+      }
   }
 
   # Merge default and custom cleanup policies for each repository

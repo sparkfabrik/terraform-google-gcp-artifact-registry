@@ -28,7 +28,7 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ⚠️ **BREAKING CHANGES**
 
-- FEAT (refs platform/board#3863): Add default clean up cache policies. If you don't want it set `cleanup_policies_enable_default` attribute (in the *repository* item defined into `repositories` variable) to `false`
+- FEAT (refs platform/board#3863): Add default cleanup cache policies. If you don't want it set `cleanup_policies_enable_default` attribute (in the *repository* item defined into `repositories` variable) to `false`
 
 ## [0.10.2] - 2025-09-04
 
