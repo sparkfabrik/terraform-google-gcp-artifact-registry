@@ -3,6 +3,15 @@ project_id = "my-sample-project-id"
 repositories = {
   "project-images" = {
     description = "Docker images repository"
+    enable_default_cleanup_policies = false
+    cleanup_policies = {
+      keep-tagged-images = {
+        action = "KEEP"
+        most_recent_versions = {
+          keep_count = 10
+        }
+      }
+    }
     readers = [
       "group:dev-team@example.com"
     ]

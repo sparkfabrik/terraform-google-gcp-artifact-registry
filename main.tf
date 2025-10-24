@@ -42,6 +42,17 @@ locals {
     }
     if repository.mode == "REMOTE_REPOSITORY"
   }
+  
+  # Resolve cleanup policies based on repository-specific enable_default_cleanup_policies flag
+  # Default behavior: merge with default policies (true) unless explicitly set to false
+  resolved_cleanup_policies = {
+    for repository_id, repository in var.repositories : repository_id => (
+      coalesce(repository.enable_default_cleanup_policies, true) ? merge(
+        var.default_cleanup_policies,
+        repository.cleanup_policies
+      ) : repository.cleanup_policies
+    )
+  }
 }
 
 data "google_secret_manager_secret_version" "remote_repository_secrets" {
@@ -66,7 +77,7 @@ resource "google_artifact_registry_repository" "repositories" {
   labels                 = merge(var.default_labels, var.additional_labels, each.value.labels)
 
   dynamic "cleanup_policies" {
-    for_each = each.value.cleanup_policies
+    for_each = local.resolved_cleanup_policies[each.key]
     content {
       id     = cleanup_policies.key
       action = cleanup_policies.value.action
