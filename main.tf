@@ -30,7 +30,7 @@ locals {
       # Keep semantic versions without prefix (1.0, 1.0.0, 1-0-0, etc.)
       # NOTE: GCP Artifact Registry does not support wildcard version prefixes.
       #       The version_name_prefixes below explicitly match tags that start with a single digit (0–9)
-      #       followed by '.' or '-' (e.g: 1.0, 2-0-0). Tags with major version > 100 (e.g: 101.0) will NOT be matched.
+      #       followed by '.' or '-' (e.g: 1.0, 2-0-0). Tags with major version >= 100 (e.g: 100.0, 101.0) will NOT be matched.
       keep-semantic-versions-dot = {
         action = "KEEP"
         condition = {
