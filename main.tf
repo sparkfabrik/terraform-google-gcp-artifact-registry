@@ -12,11 +12,11 @@ resource "google_project_service" "project" {
 locals {
   # Default cleanup policies to be applied when enabled
   cleanup_policies_default = {
-    # Keep tagged images: keep the last 5 versions
+    # Keep tagged images: keep the last 10 versions
       keep-tagged-images = {
         action = "KEEP"
         most_recent_versions = {
-          keep_count = 5
+          keep_count = 10
         }
       }
       # Keep protected tags always (latest, main, master, develop, stage, semantic versions with v prefix)
