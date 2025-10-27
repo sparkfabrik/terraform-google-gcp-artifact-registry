@@ -30,12 +30,19 @@ locals {
       # Keep semantic versions without prefix (1.0, 1.0.0, 1-0-0, etc.)
       # NOTE: GCP Artifact Registry does not support wildcard version prefixes.
       #       The version_name_prefixes below explicitly match tags that start with a single digit (0–9)
-      #       followed by '.' or '-' (e.g: 1.0, 2-0-0). Tags with major version >= 10 (e.g: 10.0) will NOT be matched.
-      keep-semantic-versions = {
+      #       followed by '.' or '-' (e.g: 1.0, 2-0-0). Tags with major version > 100 (e.g: 101.0) will NOT be matched.
+      keep-semantic-versions-dot = {
         action = "KEEP"
         condition = {
           tag_state             = "TAGGED"
-          version_name_prefixes = ["0.", "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.", "0-", "1-", "2-", "3-", "4-", "5-", "6-", "7-", "8-", "9-"]
+          version_name_prefixes = [for i in range(0, 100) : "${i}."]
+        }
+      }
+      keep-semantic-versions-dash = {
+        action = "KEEP"
+        condition = {
+          tag_state             = "TAGGED"
+          version_name_prefixes = [for i in range(0, 100) : "${i}-"]
         }
       }
       # Delete everything else older than 90 days
