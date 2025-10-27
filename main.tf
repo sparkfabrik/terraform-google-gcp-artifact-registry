@@ -17,7 +17,9 @@ locals {
         action = "KEEP"
         most_recent_versions = {
           keep_count = 10
+          package_name_prefixes = []
         }
+        condition = {}
       }
       # Keep protected tags always (latest, main, master, develop, stage, semantic versions with v prefix)
       keep-protected-tags = {
@@ -25,7 +27,12 @@ locals {
         condition = {
           tag_state    = "TAGGED"
           tag_prefixes = ["latest", "main", "master", "develop", "stage", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
+          version_name_prefixes = []
+          package_name_prefixes = []
+          older_than            = null
+          newer_than            = null
         }
+        most_recent_versions = {}
       }
       # Keep semantic versions without prefix (1.0, 1.0.0, 1-0-0, etc.)
       # NOTE: GCP Artifact Registry does not support wildcard version prefixes.
@@ -35,15 +42,25 @@ locals {
         action = "KEEP"
         condition = {
           tag_state             = "TAGGED"
+          tag_prefixes = []
           version_name_prefixes = [for i in range(0, 100) : "${i}."]
+          package_name_prefixes = []
+          older_than            = null
+          newer_than            = null
         }
+        most_recent_versions = {}
       }
       keep-semantic-versions-dash = {
         action = "KEEP"
         condition = {
           tag_state             = "TAGGED"
+          tag_prefixes = []
           version_name_prefixes = [for i in range(0, 100) : "${i}-"]
+          package_name_prefixes = []
+          older_than            = null
+          newer_than            = null
         }
+        most_recent_versions = {}
       }
       # Delete everything else older than 90 days
       remove-old-images = {
@@ -51,7 +68,12 @@ locals {
         condition = {
           tag_state  = "ANY"
           older_than = "7776000s" # 90 days
+          tag_prefixes = []
+          version_name_prefixes = []
+          package_name_prefixes = []
+          newer_than            = null
         }
+        most_recent_versions = {}
       }
   }
 
@@ -62,7 +84,7 @@ locals {
       {
         # Merge default policies (if enabled) with custom policies
         cleanup_policies = merge(
-          repository.cleanup_policies_enable_default ? local.cleanup_policies_default : {},
+          repository.cleanup_policies_enable_default ? local.cleanup_policies_default : tomap({}),
           repository.cleanup_policies
         )
       }
@@ -124,14 +146,14 @@ resource "google_artifact_registry_repository" "repositories" {
   cleanup_policy_dry_run = each.value.cleanup_policy_dry_run
   labels                 = merge(var.default_labels, var.additional_labels, each.value.labels)
 
-  dynamic "cleanup_policies" {
+    dynamic "cleanup_policies" {
     for_each = each.value.cleanup_policies
     content {
       id     = cleanup_policies.key
       action = cleanup_policies.value.action
 
       dynamic "condition" {
-        for_each = cleanup_policies.value.condition != {} && cleanup_policies.value.condition.tag_state != null ? [cleanup_policies.value.condition] : []
+        for_each = cleanup_policies.value.condition != {} && lookup(cleanup_policies.value.condition, "tag_state", null) != null ? [cleanup_policies.value.condition] : []
         content {
           tag_state             = condition.value.tag_state
           tag_prefixes          = condition.value.tag_prefixes
@@ -143,7 +165,7 @@ resource "google_artifact_registry_repository" "repositories" {
       }
 
       dynamic "most_recent_versions" {
-        for_each = cleanup_policies.value.most_recent_versions != {} && cleanup_policies.value.most_recent_versions.keep_count != null ? [cleanup_policies.value.most_recent_versions] : []
+        for_each = cleanup_policies.value.most_recent_versions != {} && lookup(cleanup_policies.value.most_recent_versions, "keep_count", null) != null ? [cleanup_policies.value.most_recent_versions] : []
         content {
           package_name_prefixes = most_recent_versions.value.package_name_prefixes
           keep_count            = most_recent_versions.value.keep_count
