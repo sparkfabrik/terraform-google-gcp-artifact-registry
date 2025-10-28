@@ -17,8 +17,3 @@ output "custom_role_artifact_registry_lister_id" {
   value       = length(var.artifact_registry_listers) > 0 ? local.custom_role_artifact_registry_lister_id : null
   description = "The ID of the custom role for Artifact Registry listers. The role is created only if the list of Artifact Registry listers is not empty."
 }
-
-output "repositories_configurations" {
-  value = local.repositories_final
-  description = "The final configuration of the Artifact Registry repositories after merging with defaults."
-}
