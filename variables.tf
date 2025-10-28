@@ -19,10 +19,11 @@ variable "default_location" {
 # Artifact Registry repositories.
 variable "repositories" {
   type = map(object({
-    description            = string
-    format                 = optional(string, "DOCKER")
-    mode                   = optional(string, "STANDARD_REPOSITORY")
-    cleanup_policy_dry_run = optional(bool, true)
+    description                     = string
+    format                          = optional(string, "DOCKER")
+    mode                            = optional(string, "STANDARD_REPOSITORY")
+    cleanup_policy_dry_run          = optional(bool, true)
+    cleanup_policies_enable_default = optional(bool, true)
     cleanup_policies = optional(map(object({
       action = optional(string, ""),
       condition = optional(object({
