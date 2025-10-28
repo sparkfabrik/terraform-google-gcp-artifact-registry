@@ -26,7 +26,7 @@ locals {
         action = "KEEP"
         condition = {
           tag_state    = "TAGGED"
-          tag_prefixes = ["latest", "main", "master", "develop", "stage", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
+          tag_prefixes = ["latest", "main", "master", "dev", "stag", "review", "prod", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
           version_name_prefixes = []
           package_name_prefixes = []
           older_than            = null
