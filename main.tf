@@ -82,10 +82,11 @@ locals {
     for repository_id, repository in var.repositories : repository_id => merge(
       repository,
       {
-        # Merge default policies (if enabled) with custom policies
+        # Merge default policies (if enabled) with custom policies.
+        # Use a for-expression with an if filter to avoid inconsistent conditional object types.
         cleanup_policies = merge(
-          repository.cleanup_policies_enable_default ? local.cleanup_policies_default : tomap({}),
-          repository.cleanup_policies
+          repository.cleanup_policies,
+          { for k, v in local.cleanup_policies_default : k => v if repository.cleanup_policies_enable_default }
         )
       }
     )
