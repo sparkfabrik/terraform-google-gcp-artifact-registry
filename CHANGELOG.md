@@ -26,7 +26,7 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ### Changed
 
-- FIX: update cleanup policy conditions for tag and version prefixes 
+- FIX: update cleanup policy conditions for tag and version prefixes
 
 ## [0.11.0] - 2025-10-27
 
