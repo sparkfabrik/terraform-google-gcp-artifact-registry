@@ -42,8 +42,8 @@ locals {
         action = "KEEP"
         condition = {
           tag_state             = "TAGGED"
-          tag_prefixes = []
-          version_name_prefixes = [for i in range(0, 100) : "${i}."]
+          tag_prefixes          = [for i in range(0, 100) : "${i}."]
+          version_name_prefixes = []
           package_name_prefixes = []
           older_than            = null
           newer_than            = null
@@ -54,8 +54,8 @@ locals {
         action = "KEEP"
         condition = {
           tag_state             = "TAGGED"
-          tag_prefixes = []
-          version_name_prefixes = [for i in range(0, 100) : "${i}-"]
+          tag_prefixes          = [for i in range(0, 100) : "${i}-"]
+          version_name_prefixes = []
           package_name_prefixes = []
           older_than            = null
           newer_than            = null
