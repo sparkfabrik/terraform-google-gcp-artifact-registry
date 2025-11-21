@@ -148,9 +148,7 @@ resource "google_artifact_registry_repository" "repositories" {
   labels                 = merge(var.default_labels, var.additional_labels, each.value.labels)
 
   vulnerability_scanning_config {
-    enablement_config       = each.value.vulnerability_scanning_config.enablement_config
-    enablement_state        = each.value.vulnerability_scanning_config.enablement_state
-    enablement_state_reason = each.value.vulnerability_scanning_config.enablement_state_reason
+    enablement_config       = each.value.vulnerability_scanning_enabled ? "INHERITED" : "DISABLED"
   }
   
   dynamic "cleanup_policies" {
