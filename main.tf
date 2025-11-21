@@ -147,7 +147,13 @@ resource "google_artifact_registry_repository" "repositories" {
   cleanup_policy_dry_run = each.value.cleanup_policy_dry_run
   labels                 = merge(var.default_labels, var.additional_labels, each.value.labels)
 
-    dynamic "cleanup_policies" {
+  vulnerability_scanning_config {
+    enablement_config       = each.value.vulnerability_scanning_config.enablement_config
+    enablement_state        = each.value.vulnerability_scanning_config.enablement_state
+    enablement_state_reason = each.value.vulnerability_scanning_config.enablement_state_reason
+  }
+  
+  dynamic "cleanup_policies" {
     for_each = each.value.cleanup_policies
     content {
       id     = cleanup_policies.key
