@@ -22,6 +22,11 @@ variable "repositories" {
     description                     = string
     format                          = optional(string, "DOCKER")
     mode                            = optional(string, "STANDARD_REPOSITORY")
+    vulnerability_scanning_config = optional(object({
+      enablement_config       = optional(string, "DISABLED")
+      enablement_state        = optional(string)
+      enablement_state_reason = optional(string)
+    }), {})
     cleanup_policy_dry_run          = optional(bool, true)
     cleanup_policies_enable_default = optional(bool, true)
     cleanup_policies = optional(map(object({

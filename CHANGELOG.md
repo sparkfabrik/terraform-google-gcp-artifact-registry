@@ -20,6 +20,14 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.12.0] - 2025-11-22
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.11.1...0.12.0)
+
+### Changed
+
+- FEAT (refs platform/board#4025): add `vulnerability_scanning_config` block
+
 ## [0.11.1] - 2025-11-07
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.11.0...0.11.1)
