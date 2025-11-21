@@ -26,7 +26,9 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ### Changed
 
-- FEAT (refs platform/board#4025): add `vulnerability_scanning_config` block
+**:warning: BREAKING CHANGES**
+
+- FEAT (refs platform/board#4025): add `vulnerability_scanning_config` block. This configuration require `hashicorp/google` provider to `>= 6.15.0` versione ([CHANGELOG](https://github.com/hashicorp/terraform-provider-google/blob/main/CHANGELOG.md#6150-january-6-2025))
 
 ## [0.11.1] - 2025-11-07
 
