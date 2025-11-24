@@ -20,6 +20,16 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.12.0] - 2025-11-24
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.11.1...0.12.0)
+
+### Changed
+
+**:warning: BREAKING CHANGES**
+
+- FEAT (refs platform/board#4025): add `vulnerability_scanning_config` block. This configuration require `hashicorp/google` provider to `>= 6.15.0` version ([CHANGELOG](https://github.com/hashicorp/terraform-provider-google/blob/main/CHANGELOG.md#6150-january-6-2025))
+
 ## [0.11.1] - 2025-11-07
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.11.0...0.11.1)
@@ -36,7 +46,7 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ⚠️ **BREAKING CHANGES**
 
-- FEAT (refs platform/board#3863): Add default cleanup cache policies. If you don't want it set `cleanup_policies_enable_default` attribute (in the *repository* item defined into `repositories` variable) to `false`
+- FEAT (refs platform/board#3863): Add default cleanup cache policies. If you don't want it set `cleanup_policies_enable_default` attribute (in the _repository_ item defined into `repositories` variable) to `false`
 
 ## [0.10.2] - 2025-09-04
 
