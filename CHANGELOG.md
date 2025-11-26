@@ -20,6 +20,14 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.13.0] - 2025-11-26
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.12.0...0.13.0)
+
+### Changed
+
+- FEAT (refs platform/board#3977): enable cleanup policy by default.
+
 ## [0.12.0] - 2025-11-24
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.11.1...0.12.0)
