@@ -23,7 +23,7 @@ variable "repositories" {
     format                          = optional(string, "DOCKER")
     mode                            = optional(string, "STANDARD_REPOSITORY")
     vulnerability_scanning_enabled = optional(bool, false)
-    cleanup_policy_dry_run          = optional(bool, true)
+    cleanup_policy_dry_run          = optional(bool, false)
     cleanup_policies_enable_default = optional(bool, true)
     cleanup_policies = optional(map(object({
       action = optional(string, ""),
