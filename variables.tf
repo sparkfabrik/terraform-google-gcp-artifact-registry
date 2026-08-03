@@ -16,6 +16,18 @@ variable "default_location" {
   default     = "europe-west1"
 }
 
+# Retention threshold for the default "remove-old-images" cleanup policy.
+variable "remove_old_images_older_than" {
+  type        = string
+  description = "The `older_than` threshold, expressed as a duration in seconds (e.g. \"2592000s\" for 30 days), for the default \"remove-old-images\" cleanup policy. Images older than this that are not retained by a KEEP policy are deleted. Only applies to repositories with `cleanup_policies_enable_default = true`. Set to \"7776000s\" to keep the previous 90 days behavior."
+  default     = "2592000s" # 30 days
+
+  validation {
+    condition     = can(regex("^[0-9]+s$", var.remove_old_images_older_than))
+    error_message = "The remove_old_images_older_than value must be a duration in seconds ending with \"s\" (e.g. \"2592000s\")."
+  }
+}
+
 # Artifact Registry repositories.
 variable "repositories" {
   type = map(object({

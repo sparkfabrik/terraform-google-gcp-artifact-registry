@@ -62,12 +62,12 @@ locals {
         }
         most_recent_versions = {}
       }
-      # Delete everything else older than 90 days
+      # Delete everything else older than the configured retention
       remove-old-images = {
         action = "DELETE"
         condition = {
           tag_state  = "ANY"
-          older_than = "7776000s" # 90 days
+          older_than = var.remove_old_images_older_than
           tag_prefixes = []
           version_name_prefixes = []
           package_name_prefixes = []
