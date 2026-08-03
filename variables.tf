@@ -34,7 +34,7 @@ variable "repositories" {
     description                     = string
     format                          = optional(string, "DOCKER")
     mode                            = optional(string, "STANDARD_REPOSITORY")
-    vulnerability_scanning_enabled = optional(bool, false)
+    vulnerability_scanning_enabled  = optional(bool, false)
     cleanup_policy_dry_run          = optional(bool, false)
     cleanup_policies_enable_default = optional(bool, true)
     cleanup_policies = optional(map(object({
@@ -85,8 +85,8 @@ variable "repositories" {
 
   validation {
     condition = alltrue([
-      for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : 
-        policy.most_recent_versions == {} || try((policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count > 0), true)
+      for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) :
+      policy.most_recent_versions == {} || try((policy.most_recent_versions.keep_count == null || policy.most_recent_versions.keep_count > 0), true)
     ])
     error_message = "Keep count must be null or greater than zero if specified."
   }

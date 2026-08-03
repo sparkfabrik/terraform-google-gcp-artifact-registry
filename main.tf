@@ -13,68 +13,68 @@ locals {
   # Default cleanup policies to be applied when enabled
   cleanup_policies_default = {
     # Keep tagged images: keep the last 10 versions
-      keep-tagged-images = {
-        action = "KEEP"
-        most_recent_versions = {
-          keep_count = 10
-          package_name_prefixes = []
-        }
-        condition = {}
+    keep-tagged-images = {
+      action = "KEEP"
+      most_recent_versions = {
+        keep_count            = 10
+        package_name_prefixes = []
       }
-      # Keep protected tags always (latest, main, master, develop, stage, semantic versions with v prefix)
-      keep-protected-tags = {
-        action = "KEEP"
-        condition = {
-          tag_state    = "TAGGED"
-          tag_prefixes = ["latest", "main", "master", "dev", "stag", "review", "prod", "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
-          version_name_prefixes = []
-          package_name_prefixes = []
-          older_than            = null
-          newer_than            = null
-        }
-        most_recent_versions = {}
+      condition = {}
+    }
+    # Keep protected tags always (latest, main, master, develop, stage, semantic versions with v prefix)
+    keep-protected-tags = {
+      action = "KEEP"
+      condition = {
+        tag_state             = "TAGGED"
+        tag_prefixes          = ["latest", "main", "master", "dev", "stag", "review", "prod", "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
+        version_name_prefixes = []
+        package_name_prefixes = []
+        older_than            = null
+        newer_than            = null
       }
-      # Keep semantic versions without prefix (1.0, 1.0.0, 1-0-0, etc.)
-      # NOTE: GCP Artifact Registry does not support wildcard version prefixes.
-      #       The version_name_prefixes below explicitly match tags that start with a single digit (0–9)
-      #       followed by '.' or '-' (e.g: 1.0, 2-0-0). Tags with major version >= 100 (e.g: 100.0, 101.0) will NOT be matched.
-      keep-semantic-versions-dot = {
-        action = "KEEP"
-        condition = {
-          tag_state             = "TAGGED"
-          tag_prefixes          = [for i in range(0, 100) : "${i}."]
-          version_name_prefixes = []
-          package_name_prefixes = []
-          older_than            = null
-          newer_than            = null
-        }
-        most_recent_versions = {}
+      most_recent_versions = {}
+    }
+    # Keep semantic versions without prefix (1.0, 1.0.0, 1-0-0, etc.)
+    # NOTE: GCP Artifact Registry does not support wildcard version prefixes.
+    #       The version_name_prefixes below explicitly match tags that start with a single digit (0–9)
+    #       followed by '.' or '-' (e.g: 1.0, 2-0-0). Tags with major version >= 100 (e.g: 100.0, 101.0) will NOT be matched.
+    keep-semantic-versions-dot = {
+      action = "KEEP"
+      condition = {
+        tag_state             = "TAGGED"
+        tag_prefixes          = [for i in range(0, 100) : "${i}."]
+        version_name_prefixes = []
+        package_name_prefixes = []
+        older_than            = null
+        newer_than            = null
       }
-      keep-semantic-versions-dash = {
-        action = "KEEP"
-        condition = {
-          tag_state             = "TAGGED"
-          tag_prefixes          = [for i in range(0, 100) : "${i}-"]
-          version_name_prefixes = []
-          package_name_prefixes = []
-          older_than            = null
-          newer_than            = null
-        }
-        most_recent_versions = {}
+      most_recent_versions = {}
+    }
+    keep-semantic-versions-dash = {
+      action = "KEEP"
+      condition = {
+        tag_state             = "TAGGED"
+        tag_prefixes          = [for i in range(0, 100) : "${i}-"]
+        version_name_prefixes = []
+        package_name_prefixes = []
+        older_than            = null
+        newer_than            = null
       }
-      # Delete everything else older than the configured retention
-      remove-old-images = {
-        action = "DELETE"
-        condition = {
-          tag_state  = "ANY"
-          older_than = var.remove_old_images_older_than
-          tag_prefixes = []
-          version_name_prefixes = []
-          package_name_prefixes = []
-          newer_than            = null
-        }
-        most_recent_versions = {}
+      most_recent_versions = {}
+    }
+    # Delete everything else older than the configured retention
+    remove-old-images = {
+      action = "DELETE"
+      condition = {
+        tag_state             = "ANY"
+        older_than            = var.remove_old_images_older_than
+        tag_prefixes          = []
+        version_name_prefixes = []
+        package_name_prefixes = []
+        newer_than            = null
       }
+      most_recent_versions = {}
+    }
   }
 
   # Merge default and custom cleanup policies for each repository
@@ -148,9 +148,9 @@ resource "google_artifact_registry_repository" "repositories" {
   labels                 = merge(var.default_labels, var.additional_labels, each.value.labels)
 
   vulnerability_scanning_config {
-    enablement_config       = each.value.vulnerability_scanning_enabled ? "INHERITED" : "DISABLED"
+    enablement_config = each.value.vulnerability_scanning_enabled ? "INHERITED" : "DISABLED"
   }
-  
+
   dynamic "cleanup_policies" {
     for_each = each.value.cleanup_policies
     content {
