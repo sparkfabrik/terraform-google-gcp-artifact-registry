@@ -20,6 +20,16 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-08-06
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.14.0...0.15.0)
+
+### Changed
+
+**:warning: BREAKING CHANGES**
+
+- BREAKING (refs sparkfabrik-innovation-team/board#4769): parameterize the `older_than` threshold of the default `remove-old-images` cleanup policy via the new `remove_old_images_older_than` variable, with the default lowered from 90 days to 30 days (`2592000s`). Consumers relying on the previous behavior must set `remove_old_images_older_than = "7776000s"`.
+
 ## [0.14.0] - 2026-08-06
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.13.0...0.14.0)
