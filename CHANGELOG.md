@@ -20,6 +20,14 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-08-06
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.13.0...0.14.0)
+
+### Changed
+
+- FIX: add `v0` to the `keep-protected-tags` default cleanup policy `tag_prefixes`. Tags prefixed `v0` (e.g. `v0.1.0`) matched no KEEP policy and were deleted by the 90-day delete policy.
+
 ## [0.13.0] - 2025-11-26
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.12.0...0.13.0)
