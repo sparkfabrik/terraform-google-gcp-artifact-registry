@@ -20,6 +20,10 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-08-06
+
+[Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.14.0...0.15.0)
+
 ### Changed
 
 **:warning: BREAKING CHANGES**
