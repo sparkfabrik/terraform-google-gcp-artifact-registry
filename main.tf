@@ -122,8 +122,22 @@ locals {
       username_password_credentials_password_secret_name    = lookup(repository.remote_repository_config_docker, "username_password_credentials_password_secret_name", "")
       username_password_credentials_password_secret_version = lookup(repository.remote_repository_config_docker, "username_password_credentials_password_secret_version", "latest")
     }
-    if repository.mode == "REMOTE_REPOSITORY"
+    if repository.mode == "REMOTE_REPOSITORY" && repository.remote_repository_config_docker != null
   }
+
+  # The IAM member of the Artifact Registry service agent of this project. This is the
+  # member that the owner of an upstream Artifact Registry repository has to grant
+  # roles/artifactregistry.serviceAgent to, so that a remote repository defined here can
+  # fill its cache from that upstream.
+  artifact_registry_service_agent_member = length(data.google_project.project) > 0 ? "serviceAccount:service-${data.google_project.project[0].number}@gcp-sa-artifactregistry.iam.gserviceaccount.com" : null
+}
+
+# Read the project number, only when a repository proxies another Artifact Registry
+# repository, so that consumers of the other features acquire no project read dependency.
+data "google_project" "project" {
+  count = length([for repository in var.repositories : repository if repository.remote_repository_config_common != null]) > 0 ? 1 : 0
+
+  project_id = var.project_id
 }
 
 data "google_secret_manager_secret_version" "remote_repository_secrets" {
@@ -192,7 +206,7 @@ resource "google_artifact_registry_repository" "repositories" {
   }
 
   dynamic "remote_repository_config" {
-    for_each = each.value.mode == "REMOTE_REPOSITORY" ? [each.value.remote_repository_config_docker] : []
+    for_each = each.value.mode == "REMOTE_REPOSITORY" && each.value.remote_repository_config_docker != null ? [each.value.remote_repository_config_docker] : []
 
     content {
       description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
@@ -225,6 +239,22 @@ resource "google_artifact_registry_repository" "repositories" {
           }
         }
       }
+    }
+  }
+
+  # Proxy another Artifact Registry repository. The upstream is reached as the Artifact
+  # Registry service agent of this project, so no credentials are stored here.
+  dynamic "remote_repository_config" {
+    for_each = each.value.mode == "REMOTE_REPOSITORY" && each.value.remote_repository_config_common != null ? [each.value.remote_repository_config_common] : []
+
+    content {
+      description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
+
+      common_repository {
+        uri = remote_repository_config.value.uri
+      }
+
+      disable_upstream_validation = remote_repository_config.value.disable_upstream_validation
     }
   }
 

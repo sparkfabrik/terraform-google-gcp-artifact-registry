@@ -192,6 +192,21 @@ data source is gated so consumers that use none of the new fields do not acquire
    `cleanup_policies_enable_default = false` is the safer setting for a cache whose
    consumers pin digests.
 
+9. **The prerequisite documentation lives in `README.md`, not in the variable
+   description.** The `repositories` variable already renders a very large type into the
+   terraform-docs inputs table, and a multi-paragraph description made that row
+   unreadable. The variable description carries the short form (the exactly-one rule, the
+   two configurations, the standard-mode requirement, the existence of the grant) and
+   points at a hand-written "Remote repositories" section above the terraform-docs marker,
+   which holds the accepted `uri` shapes, the `gcloud` grant command, the privilege
+   warning and the cleanup-policy caveat.
+
+10. **`.terraform.lock.hcl` is git-ignored.** Running the new tests requires
+    `terraform init`, which writes a lock file. Committing it in a module would both pin a
+    provider version for a repository that intentionally declares only a floor, and feed
+    that resolved version into the terraform-docs providers table, so the generated README
+    would report whichever version the last local `init` happened to resolve.
+
 ## Backwards compatibility
 
 - `custom_repository_uri` remains a required attribute of

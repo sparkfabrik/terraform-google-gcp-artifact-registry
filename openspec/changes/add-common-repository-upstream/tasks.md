@@ -2,12 +2,12 @@
 
 ## 1. Artifact Registry upstream configuration
 
-- [ ] 1.1 Add `remote_repository_config_common = optional(object({ description = optional(string, ""), uri = string, disable_upstream_validation = optional(bool, false) }), null)` to the `repositories` object type in `variables.tf`, documenting in the variable description that `uri` accepts an Artifact Registry resource path, an Artifact Registry repository URL or a registry URI, and that an Artifact Registry upstream must be a standard-mode repository.
-- [ ] 1.2 Replace the current `REMOTE_REPOSITORY` validation with the exactly-one rule over `remote_repository_config_docker` and `remote_repository_config_common`, with an error message naming both fields.
-- [ ] 1.3 Add the `dynamic "remote_repository_config"` block rendering `common_repository`, with the same empty-description fallback to the repository description as the docker block.
-- [ ] 1.4 Guard the existing docker `remote_repository_config` block on `remote_repository_config_docker != null`, so the two blocks are mutually exclusive at render time.
-- [ ] 1.5 Make `local.remote_repositories` and `data.google_secret_manager_secret_version.remote_repository_secrets` tolerate a null docker configuration: the `lookup(repository.remote_repository_config_docker, ...)` calls in `main.tf:118-126` run for every `REMOTE_REPOSITORY` repository.
-- [ ] 1.6 Document the cross-project prerequisites in the variable description and `README.md`: the upstream owner grants `roles/artifactregistry.serviceAgent` to the consumer project's service agent before the remote repository is created, the upstream must be standard mode, and `disable_upstream_validation` is the escape hatch when the grant is not yet in place.
+- [x] 1.1 Add `remote_repository_config_common = optional(object({ description = optional(string, ""), uri = string, disable_upstream_validation = optional(bool, false) }), null)` to the `repositories` object type in `variables.tf`, with a variable description stating the exactly-one rule, the two remote configurations and the standard-mode upstream requirement, and pointing at the README section for the accepted `uri` shapes and the full prerequisites.
+- [x] 1.2 Replace the current `REMOTE_REPOSITORY` validation with the exactly-one rule over `remote_repository_config_docker` and `remote_repository_config_common`, with an error message naming both fields.
+- [x] 1.3 Add the `dynamic "remote_repository_config"` block rendering `common_repository`, with the same empty-description fallback to the repository description as the docker block.
+- [x] 1.4 Guard the existing docker `remote_repository_config` block on `remote_repository_config_docker != null`, so the two blocks are mutually exclusive at render time.
+- [x] 1.5 Make `local.remote_repositories` and `data.google_secret_manager_secret_version.remote_repository_secrets` tolerate a null docker configuration: the `lookup(repository.remote_repository_config_docker, ...)` calls in `main.tf:118-126` run for every `REMOTE_REPOSITORY` repository.
+- [x] 1.6 Document the cross-project prerequisites in a hand-written `README.md` section above the terraform-docs marker: the accepted `uri` shapes, the standard-mode upstream requirement, the `roles/artifactregistry.serviceAgent` grant the upstream owner makes before the remote repository is created (with the `gcloud` command), that the role is not read-only, `disable_upstream_validation` as the escape hatch, and the cleanup-policy caveat for a cache. The variable description carries the short form and points here.
 
 ## 2. Service agent grant
 
@@ -17,22 +17,22 @@
 
 ## 3. Service agent member output
 
-- [ ] 3.1 Add a `google_project` data source gated on at least one repository using `remote_repository_config_common`.
-- [ ] 3.2 Add an output returning `serviceAccount:service-<project_number>@gcp-sa-artifactregistry.iam.gserviceaccount.com`, `null` when the data source is not created, with a description stating that this is the member an upstream repository owner must grant `roles/artifactregistry.serviceAgent` to.
+- [x] 3.1 Add a `google_project` data source gated on at least one repository using `remote_repository_config_common`.
+- [x] 3.2 Add an output returning `serviceAccount:service-<project_number>@gcp-sa-artifactregistry.iam.gserviceaccount.com`, `null` when the data source is not created, with a description stating that this is the member an upstream repository owner must grant `roles/artifactregistry.serviceAgent` to.
 
 ## 4. Example, docs, changelog
 
-- [ ] 4.1 Add to `examples/test.tfvars` a `REMOTE_REPOSITORY` repository using `remote_repository_config_common` with an Artifact Registry resource path upstream, and a standard repository carrying a `service_agents` entry.
-- [ ] 4.2 Update `examples/README.md` to describe the two new sample repositories.
-- [ ] 4.3 Regenerate the terraform-docs block in `README.md` (`make generate-docs`).
-- [ ] 4.4 Add a `CHANGELOG.md` entry under `## [Unreleased]` / `### Added`, one bullet per feature, noting that a consumer which declares its own copy of the `repositories` object type must mirror the new fields before it can use them.
+- [ ] 4.1 Add to `examples/test.tfvars` a `REMOTE_REPOSITORY` repository using `remote_repository_config_common` with an Artifact Registry resource path upstream, and a standard repository carrying a `service_agents` entry. Done for `remote_repository_config_common` (`project-4-remote-artifact-registry`); the `service_agents` sample is pending task 2.
+- [ ] 4.2 Update `examples/README.md` to describe the two new sample repositories. Done for the Artifact Registry upstream sample; the `service_agents` sample is pending task 2.
+- [x] 4.3 Regenerate the terraform-docs block in `README.md` (`make generate-docs`).
+- [ ] 4.4 Add `CHANGELOG.md` entries under `## [Unreleased]` / `### Changed`, following the repository's `- FEAT (refs ...):` convention, one bullet per feature, noting that a consumer which declares its own copy of the `repositories` object type must mirror the new fields before it can use them. Entries added for the upstream field, the output and the tests; the `service_agents` entry is pending task 2.
 
 ## 5. Tests
 
-- [ ] 5.1 `make lint` passes with the extended example.
-- [ ] 5.2 `make tfsec` passes with the extended example.
-- [ ] 5.3 Add `tests/remote_repository.tftest.hcl` with `mock_provider "google"` and `command = plan` runs asserting the `common_repository` rendering, the unchanged docker rendering including the `DOCKER_HUB` branch, and both validation failures via `expect_failures`.
-- [ ] 5.4 Add a `terraform test` job to `.github/workflows/`, pinning a Terraform version >= 1.7, without changing the module's `required_version`.
+- [x] 5.1 `make lint` passes with the extended example.
+- [x] 5.2 `make tfsec` passes with the extended example.
+- [x] 5.3 Add `tests/remote_repository.tftest.hcl` with `mock_provider "google"` and `command = plan` runs asserting the `common_repository` rendering, the unchanged docker rendering including the `DOCKER_HUB` branch, and both validation failures via `expect_failures`.
+- [x] 5.4 Add a `terraform test` job to `.github/workflows/`, pinning a Terraform version >= 1.7, without changing the module's `required_version`.
 
 ## 6. Release
 

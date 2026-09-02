@@ -20,6 +20,12 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+### Changed
+
+- FEAT (refs platform/#4903): add `remote_repository_config_common` to the `repositories` variable, so a repository in `REMOTE_REPOSITORY` mode can proxy another Artifact Registry repository, in this project or in another one, with no stored credentials. A repository in that mode must now set exactly one of `remote_repository_config_docker` and `remote_repository_config_common`, validated at plan time. Consumers that declare their own copy of the `repositories` object type must add the new field to that copy before they can use it.
+- FEAT (refs platform/#4903): add the `artifact_registry_service_agent_member` output, which returns the IAM member of the project's Artifact Registry service agent, the member an upstream repository owner must grant `roles/artifactregistry.serviceAgent` to. It is null unless at least one repository sets `remote_repository_config_common`.
+- FEAT (refs platform/#4903): add plan-time tests under `tests/` using `mock_provider`, run by a new `Test` GitHub Actions workflow. The tests need no credentials and create no cloud resources.
+
 ## [0.15.0] - 2026-08-06
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.14.0...0.15.0)
