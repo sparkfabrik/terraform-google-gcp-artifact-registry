@@ -106,6 +106,15 @@ locals {
           "role" : "roles/artifactregistry.writer",
           "member" : writer,
         }
+        ], [
+        # Let another project's Artifact Registry service agent fill a remote repository
+        # cache from this repository. The role is not read-only: it also allows version
+        # deletion, so it is granted at repository scope only.
+        for service_agent in repository.service_agents : {
+          "repository_id" : repository_id,
+          "role" : "roles/artifactregistry.serviceAgent",
+          "member" : service_agent,
+        }
       ])
     ]) : "${item.repository_id}--${item.role}--${item.member}" =>
     {

@@ -67,4 +67,14 @@ repositories = {
       "group:dev-team-2@example.com"
     ]
   }
+  "project-5-shared-upstream" = {
+    description = "Standard repository shared as the upstream of another project's cache"
+    readers = [
+      "group:dev-team@example.com"
+    ]
+    # The Artifact Registry service agent of the project that owns the remote repository.
+    service_agents = [
+      "serviceAccount:service-000000000000@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+    ]
+  }
 }

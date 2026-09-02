@@ -11,9 +11,9 @@
 
 ## 2. Service agent grant
 
-- [ ] 2.1 Add `service_agents = optional(list(string), [])` to the `repositories` object type in `variables.tf`, documenting that `roles/artifactregistry.serviceAgent` includes `artifactregistry.versions.delete` and belongs at repository scope only.
-- [ ] 2.2 Extend `local.member_and_role_per_repo` with a third branch mapping `service_agents` to `roles/artifactregistry.serviceAgent`, keeping the existing `"<repository>--<role>--<member>"` key shape.
-- [ ] 2.3 Verify no state address changes for existing `readers` and `writers` bindings: a plan against the example must show only additions.
+- [x] 2.1 Add `service_agents = optional(list(string), [])` to the `repositories` object type in `variables.tf`, documenting that `roles/artifactregistry.serviceAgent` includes `artifactregistry.versions.delete` and belongs at repository scope only.
+- [x] 2.2 Extend `local.member_and_role_per_repo` with a third branch mapping `service_agents` to `roles/artifactregistry.serviceAgent`, keeping the existing `"<repository>--<role>--<member>"` key shape.
+- [x] 2.3 Verify no state address changes for existing `readers` and `writers` bindings. Verified by a plan-time test asserting the exact key set of `google_artifact_registry_repository_iam_member.member` for a repository with only `readers` and `writers`, and by a test proving the same member in two roles yields two distinct bindings. A plan against real state was not run: the module has no test project or credentials, and the key already contains the role (`main.tf`), so no existing address can change.
 
 ## 3. Service agent member output
 
@@ -22,16 +22,16 @@
 
 ## 4. Example, docs, changelog
 
-- [ ] 4.1 Add to `examples/test.tfvars` a `REMOTE_REPOSITORY` repository using `remote_repository_config_common` with an Artifact Registry resource path upstream, and a standard repository carrying a `service_agents` entry. Done for `remote_repository_config_common` (`project-4-remote-artifact-registry`); the `service_agents` sample is pending task 2.
-- [ ] 4.2 Update `examples/README.md` to describe the two new sample repositories. Done for the Artifact Registry upstream sample; the `service_agents` sample is pending task 2.
+- [x] 4.1 Add to `examples/test.tfvars` a `REMOTE_REPOSITORY` repository using `remote_repository_config_common` with an Artifact Registry resource path upstream (`project-4-remote-artifact-registry`), and a standard repository carrying a `service_agents` entry (`project-5-shared-upstream`).
+- [x] 4.2 Update `examples/README.md` to describe the two new sample repositories.
 - [x] 4.3 Regenerate the terraform-docs block in `README.md` (`make generate-docs`).
-- [ ] 4.4 Add `CHANGELOG.md` entries under `## [Unreleased]` / `### Changed`, following the repository's `- FEAT (refs ...):` convention, one bullet per feature, noting that a consumer which declares its own copy of the `repositories` object type must mirror the new fields before it can use them. Entries added for the upstream field, the output and the tests; the `service_agents` entry is pending task 2.
+- [x] 4.4 Add `CHANGELOG.md` entries under `## [Unreleased]` / `### Changed`, following the repository's `- FEAT (refs ...):` convention, one bullet per feature, noting that a consumer which declares its own copy of the `repositories` object type must mirror the new fields before it can use them.
 
 ## 5. Tests
 
 - [x] 5.1 `make lint` passes with the extended example.
 - [x] 5.2 `make tfsec` passes with the extended example.
-- [x] 5.3 Add `tests/remote_repository.tftest.hcl` with `mock_provider "google"` and `command = plan` runs asserting the `common_repository` rendering, the unchanged docker rendering including the `DOCKER_HUB` branch, and both validation failures via `expect_failures`.
+- [x] 5.3 Add `tests/remote_repository.tftest.hcl` with `mock_provider "google"` and `command = plan` runs asserting the `common_repository` rendering, the unchanged docker rendering including the `DOCKER_HUB` branch, and both validation failures via `expect_failures`. Add `tests/repository_iam.tftest.hcl` covering the `service_agents` grant, the unchanged binding addresses when the list is empty, and the same member in two roles.
 - [x] 5.4 Add a `terraform test` job to `.github/workflows/`, pinning a Terraform version >= 1.7, without changing the module's `required_version`.
 
 ## 6. Release

@@ -70,13 +70,14 @@ variable "repositories" {
       uri                         = string
       disable_upstream_validation = optional(bool, false)
     }), null)
-    readers  = optional(list(string), [])
-    writers  = optional(list(string), [])
-    location = optional(string, "")
-    labels   = optional(map(string), {})
+    readers        = optional(list(string), [])
+    writers        = optional(list(string), [])
+    service_agents = optional(list(string), [])
+    location       = optional(string, "")
+    labels         = optional(map(string), {})
   }))
 
-  description = "List of Artifact Registry repositories to create. A repository in `REMOTE_REPOSITORY` mode must set exactly one of `remote_repository_config_docker` (an external Docker registry, credentials read from Secret Manager) and `remote_repository_config_common` (another Artifact Registry repository, no stored credentials). An Artifact Registry upstream must be a standard-mode repository, and one in another project requires a `roles/artifactregistry.serviceAgent` grant on it before the remote repository is created. See the \"Remote repositories\" section of the README for the full prerequisites."
+  description = "List of Artifact Registry repositories to create. A repository in `REMOTE_REPOSITORY` mode must set exactly one of `remote_repository_config_docker` (an external Docker registry, credentials read from Secret Manager) and `remote_repository_config_common` (another Artifact Registry repository, no stored credentials). An Artifact Registry upstream must be a standard-mode repository, and one in another project requires a `roles/artifactregistry.serviceAgent` grant on it before the remote repository is created. Use `service_agents` to make that grant on a repository of this project that another project caches: the role is not read-only, it includes `artifactregistry.versions.delete`, so grant it at repository scope only. See the \"Remote repositories\" section of the README for the full prerequisites."
 
   validation {
     condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : contains(["DELETE", "KEEP"], policy.action)])
