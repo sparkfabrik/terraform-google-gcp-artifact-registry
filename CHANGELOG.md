@@ -20,6 +20,14 @@ Following semver, any non backwards compatible feature implies that the next rel
 
 ## [Unreleased]
 
+### Changed
+
+- FEAT (refs sparkfabrik-innovation-team/board#4903): add `remote_repository_config_common` to the `repositories` variable, so a repository in `REMOTE_REPOSITORY` mode can proxy another Artifact Registry repository, in this project or in another one, with no stored credentials. A repository in that mode must now set exactly one of `remote_repository_config_docker` and `remote_repository_config_common`, validated at plan time. Consumers that declare their own copy of the `repositories` object type must add the new field to that copy before they can use it.
+- FEAT (refs sparkfabrik-innovation-team/board#4903): add `service_agents` to the `repositories` variable, granting `roles/artifactregistry.serviceAgent` on a repository. This is the grant the owner of an upstream repository makes so that another project's remote repository can fill its cache from it. The role is not read-only, it includes `artifactregistry.versions.delete`, so it is granted at repository scope only. Consumers that declare their own copy of the `repositories` object type must add the new field to that copy before they can use it.
+- FEAT (refs sparkfabrik-innovation-team/board#4903): add the `artifact_registry_service_agent_member` output, which returns the IAM member of the project's Artifact Registry service agent, the member an upstream repository owner must grant `roles/artifactregistry.serviceAgent` to. It is null unless at least one repository sets `remote_repository_config_common`.
+- FEAT (refs sparkfabrik-innovation-team/board#4903): tighten `repositories` validation. A remote configuration on a repository whose `mode` is not `REMOTE_REPOSITORY` is now rejected instead of silently ignored, an empty `remote_repository_config_common.uri` is rejected at plan time instead of failing at apply time, and every `service_agents` entry must be an Artifact Registry service agent member, because the role it grants also allows version deletion.
+- FEAT (refs sparkfabrik-innovation-team/board#4903): add plan-time tests under `tests/` using `mock_provider`, run by a new `Test` GitHub Actions workflow. The tests need no credentials and create no cloud resources.
+
 ## [0.15.0] - 2026-08-06
 
 [Compare with previous version](https://github.com/sparkfabrik/terraform-google-gcp-artifact-registry/compare/0.14.0...0.15.0)

@@ -33,3 +33,6 @@ override.tf.json
 .vscode
 .env
 .DS_Store
+
+# Provider lock file: this is a module, consumers pin their own provider versions.
+.terraform.lock.hcl

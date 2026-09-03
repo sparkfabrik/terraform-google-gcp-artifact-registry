@@ -21,8 +21,8 @@ repositories = {
     location = "europe-west1"
   },
   "project-2-virtual" = {
-    description = "Docker images repository 2"
-    mode        = "VIRTUAL_REPOSITORY"
+    description                     = "Docker images repository 2"
+    mode                            = "VIRTUAL_REPOSITORY"
     cleanup_policies_enable_default = false
     virtual_repository_config = {
       "my-repository-upstream-1" = {
@@ -52,6 +52,29 @@ repositories = {
     ]
     writers = [
       "user:admin@example.com"
+    ]
+  }
+  "project-4-remote-artifact-registry" = {
+    description = "Pull-through cache of another Artifact Registry repository"
+    mode        = "REMOTE_REPOSITORY"
+    location    = "europe-west1"
+    remote_repository_config_common = {
+      uri = "projects/upstream-project/locations/europe-west1/repositories/upstream-repo"
+    }
+    # A cache whose consumers pin digests must not evict cached versions.
+    cleanup_policies_enable_default = false
+    readers = [
+      "group:dev-team-2@example.com"
+    ]
+  }
+  "project-5-shared-upstream" = {
+    description = "Standard repository shared as the upstream of another project's cache"
+    readers = [
+      "group:dev-team@example.com"
+    ]
+    # The Artifact Registry service agent of the project that owns the remote repository.
+    service_agents = [
+      "serviceAccount:service-000000000000@gcp-sa-artifactregistry.iam.gserviceaccount.com"
     ]
   }
 }

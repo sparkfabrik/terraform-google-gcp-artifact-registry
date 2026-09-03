@@ -65,13 +65,19 @@ variable "repositories" {
       username_password_credentials_password_secret_name    = optional(string, "")
       username_password_credentials_password_secret_version = optional(string, "")
     }), null)
-    readers  = optional(list(string), [])
-    writers  = optional(list(string), [])
-    location = optional(string, "")
-    labels   = optional(map(string), {})
+    remote_repository_config_common = optional(object({
+      description                 = optional(string, "")
+      uri                         = string
+      disable_upstream_validation = optional(bool, false)
+    }), null)
+    readers        = optional(list(string), [])
+    writers        = optional(list(string), [])
+    service_agents = optional(list(string), [])
+    location       = optional(string, "")
+    labels         = optional(map(string), {})
   }))
 
-  description = "List of Artifact Registry repositories to create."
+  description = "List of Artifact Registry repositories to create. A repository in `REMOTE_REPOSITORY` mode must set exactly one of `remote_repository_config_docker` (an external Docker registry, credentials read from Secret Manager) and `remote_repository_config_common` (another Artifact Registry repository, no stored credentials). An Artifact Registry upstream must be a standard-mode repository, and one in another project requires a `roles/artifactregistry.serviceAgent` grant on it before the remote repository is created. Use `service_agents` to make that grant on a repository of this project that another project caches: the role is not read-only, it includes `artifactregistry.versions.delete`, so grant it at repository scope only. See the \"Remote repositories\" section of the README for the full prerequisites."
 
   validation {
     condition     = alltrue([for policy in flatten([for repo in var.repositories : [for cp in repo.cleanup_policies : cp]]) : contains(["DELETE", "KEEP"], policy.action)])
@@ -92,8 +98,40 @@ variable "repositories" {
   }
 
   validation {
-    condition     = alltrue([for repo in var.repositories : repo.mode == "REMOTE_REPOSITORY" ? lookup(repo, "remote_repository_config_docker", null) != null : true])
-    error_message = "Remote repository configuration is required for the REMOTE_REPOSITORY mode."
+    condition = alltrue([
+      for repo in var.repositories : repo.mode != "REMOTE_REPOSITORY" ? true : (
+        (repo.remote_repository_config_docker != null ? 1 : 0) +
+        (repo.remote_repository_config_common != null ? 1 : 0)
+      ) == 1
+    ])
+    error_message = "A repository in REMOTE_REPOSITORY mode must set exactly one of remote_repository_config_docker or remote_repository_config_common."
+  }
+
+  validation {
+    condition = alltrue([
+      for repo in var.repositories : repo.mode == "REMOTE_REPOSITORY" || (
+        repo.remote_repository_config_docker == null && repo.remote_repository_config_common == null
+      )
+    ])
+    error_message = "remote_repository_config_docker and remote_repository_config_common are only read in REMOTE_REPOSITORY mode. Remove the configuration, or set mode = \"REMOTE_REPOSITORY\"."
+  }
+
+  validation {
+    condition = alltrue([
+      for repo in var.repositories :
+      repo.remote_repository_config_common == null || trimspace(repo.remote_repository_config_common.uri) != ""
+    ])
+    error_message = "remote_repository_config_common.uri must not be empty: set an Artifact Registry resource path, an Artifact Registry repository URL, or a registry URI."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for repo in var.repositories : [
+        for member in repo.service_agents :
+        can(regex("^serviceAccount:service-[0-9]+@gcp-sa-artifactregistry\\.iam\\.gserviceaccount\\.com$", member))
+      ]
+    ]))
+    error_message = "Every service_agents entry must be an Artifact Registry service agent, in the form serviceAccount:service-<PROJECT_NUMBER>@gcp-sa-artifactregistry.iam.gserviceaccount.com. The role it grants allows version deletion, so no other principal shape is accepted."
   }
 }
 
