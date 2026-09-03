@@ -21,7 +21,16 @@ configuration.
 Artifact Registry repository URL
 (`https://REGION-docker.pkg.dev/UPSTREAM_PROJECT_ID/UPSTREAM_REPOSITORY`), or a registry
 URI (`https://registry-1.docker.io`). The module SHALL NOT validate the shape of `uri`
-beyond requiring a non-empty string; the API is the authority.
+beyond requiring a non-empty string; the API is the authority. `var.repositories`
+validation SHALL reject at plan time a `uri` that is empty or whitespace only, so the
+failure arrives before apply.
+
+#### Scenario: An empty upstream uri is rejected
+
+- **WHEN** a repository sets `remote_repository_config_common = { uri = "" }`, or a `uri`
+  containing only whitespace
+- **THEN** `terraform plan` fails with a validation error naming
+  `remote_repository_config_common.uri`
 
 #### Scenario: Artifact Registry resource path upstream
 
@@ -66,6 +75,31 @@ SHALL name both fields. Repositories in any other mode SHALL be unaffected by th
 
 - **WHEN** a repository declares `mode = "STANDARD_REPOSITORY"` and neither field
 - **THEN** `terraform plan` succeeds
+
+### Requirement: A remote configuration is confined to REMOTE_REPOSITORY mode
+
+Neither remote configuration has any effect outside `REMOTE_REPOSITORY` mode, so
+`var.repositories` validation SHALL reject at plan time any repository whose `mode` is not
+`REMOTE_REPOSITORY` and which sets `remote_repository_config_docker` or
+`remote_repository_config_common`. Silently ignoring the configuration would let a
+repository be declared as a cache and created as a plain repository. The `google_project`
+data source that backs the service agent member output SHALL be gated on the same
+condition that renders `common_repository`, mode included, so the output cannot be
+populated for a repository that is not a cache.
+
+#### Scenario: An Artifact Registry upstream outside remote mode
+
+- **WHEN** a repository leaves `mode` at its default and sets
+  `remote_repository_config_common`
+- **THEN** `terraform plan` fails with a validation error naming both remote configuration
+  fields and the required mode
+
+#### Scenario: A docker upstream outside remote mode
+
+- **WHEN** a repository leaves `mode` at its default and sets
+  `remote_repository_config_docker`
+- **THEN** `terraform plan` fails with a validation error naming both remote configuration
+  fields and the required mode
 
 ### Requirement: Backwards compatibility of the docker remote path
 

@@ -207,6 +207,39 @@ data source is gated so consumers that use none of the new fields do not acquire
     that resolved version into the terraform-docs providers table, so the generated README
     would report whichever version the last local `init` happened to resolve.
 
+11. **`service_agents` validates the member shape, breaking symmetry with `readers` and
+    `writers` on purpose.** Those two accept any IAM member string, which is right for
+    roles whose worst case is unintended read or write access inside one repository.
+    `roles/artifactregistry.serviceAgent` also carries `artifactregistry.versions.delete`,
+    and it has exactly one legitimate grantee: the Artifact Registry service agent of the
+    consumer project. There is no valid reason to put a user, a group, or a user-managed
+    service account in that list, so a value that is not
+    `serviceAccount:service-<digits>@gcp-sa-artifactregistry.iam.gserviceaccount.com` is a
+    privilege mistake, not a preference. Consistency loses to blast radius here.
+    The cost is stated rather than hidden: if Google ever changes the service agent's
+    address shape, a legitimate configuration is blocked until a new module release
+    relaxes the pattern. That is recoverable, and the failure is a clear plan-time error
+    rather than a silent over-grant.
+
+12. **A remote configuration outside `REMOTE_REPOSITORY` mode is an error, not a no-op.**
+    The rendering already ignores it, which means a repository could be written as a cache
+    and created as a plain repository with no signal. Validation rejects the combination,
+    and the `google_project` data source is gated on the same predicate the rendering uses,
+    mode included, so the service agent member output cannot be populated for a repository
+    that is not a cache. The same rule is applied to the pre-existing
+    `remote_repository_config_docker` for symmetry: no repository in the fleet sets a
+    docker remote configuration outside `REMOTE_REPOSITORY` mode, so nothing regresses.
+
+13. **The CI gate does not pin the provider version.** The module declares
+    `google >= 6.15.0` with no upper bound, so letting CI resolve the newest matching
+    provider is the only signal that the declared contract still holds. Pinning would keep
+    the gate green while the module shipped a claim it no longer honours. A provider major
+    that breaks the tests is information worth having, and the test run is reproducible
+    from the failure output. The stronger version of this idea is a matrix over both ends
+    of the declared range, the floor and the latest, which is worth doing separately: it
+    needs a per-run version constraint override rather than a pin, and it belongs to a
+    CI change rather than to this feature.
+
 ## Backwards compatibility
 
 - `custom_repository_uri` remains a required attribute of

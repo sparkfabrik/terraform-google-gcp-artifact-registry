@@ -49,6 +49,8 @@ gcloud artifacts repositories add-iam-policy-binding UPSTREAM_REPOSITORY \
 
 Creating a remote repository performs a HEAD/GET validation of its upstream. Set `disable_upstream_validation = true` to skip that check while the grant is still missing.
 
+Using `remote_repository_config_common` adds a `google_project` data source, so the identity that runs `terraform plan` needs `resourcemanager.projects.get` on `project_id` and the Cloud Resource Manager API enabled on it. Repositories that do not use the field are unaffected: the data source is not created at all.
+
 Note that `roles/artifactregistry.serviceAgent` is not read-only: it includes `artifactregistry.versions.delete`. Grant it at repository scope, never at project scope.
 
 ### Sharing a repository as an upstream

@@ -12,9 +12,27 @@ to the project. The field is the surface an upstream repository's owner uses to 
 consumer project's Artifact Registry Service Agent fill a pull-through cache from that
 repository.
 
-The module SHALL NOT verify that a listed principal is an Artifact Registry Service Agent;
-the value is passed through as an IAM member string, consistently with `readers` and
-`writers`.
+Unlike `readers` and `writers`, which accept any IAM member string, `var.repositories`
+validation SHALL reject at plan time any `service_agents` entry that does not match
+`^serviceAccount:service-[0-9]+@gcp-sa-artifactregistry\.iam\.gserviceaccount\.com$`. The
+role this field grants allows version deletion and has exactly one legitimate grantee
+shape, so a typo or a wrong principal is a privilege mistake rather than a preference. The
+error message SHALL state the required form and why no other shape is accepted.
+
+#### Scenario: A non service account member is rejected
+
+- **WHEN** a repository declares `service_agents = ["group:dev-team@example.com"]`
+- **THEN** `terraform plan` fails with a validation error stating the required member form
+
+#### Scenario: Another service's agent is rejected
+
+- **WHEN** a repository declares `service_agents = ["serviceAccount:service-000000000000@gcp-sa-pubsub.iam.gserviceaccount.com"]`
+- **THEN** `terraform plan` fails with a validation error stating the required member form
+
+#### Scenario: A user-managed service account is rejected
+
+- **WHEN** a repository declares `service_agents = ["serviceAccount:my-sa@my-project.iam.gserviceaccount.com"]`
+- **THEN** `terraform plan` fails with a validation error stating the required member form
 
 #### Scenario: Grant declared on an upstream repository
 

@@ -134,6 +134,18 @@ locals {
     if repository.mode == "REMOTE_REPOSITORY" && repository.remote_repository_config_docker != null
   }
 
+  # The effective remote_repository_config.description of each repository: an empty
+  # description on the remote configuration falls back to the repository description.
+  remote_repository_description = {
+    for repository_id, repository in var.repositories : repository_id => (
+      repository.remote_repository_config_common != null ?
+      (repository.remote_repository_config_common.description == "" ? repository.description : repository.remote_repository_config_common.description) :
+      repository.remote_repository_config_docker != null ?
+      (repository.remote_repository_config_docker.description == "" ? repository.description : repository.remote_repository_config_docker.description) :
+      repository.description
+    )
+  }
+
   # The IAM member of the Artifact Registry service agent of this project. This is the
   # member that the owner of an upstream Artifact Registry repository has to grant
   # roles/artifactregistry.serviceAgent to, so that a remote repository defined here can
@@ -144,7 +156,7 @@ locals {
 # Read the project number, only when a repository proxies another Artifact Registry
 # repository, so that consumers of the other features acquire no project read dependency.
 data "google_project" "project" {
-  count = length([for repository in var.repositories : repository if repository.remote_repository_config_common != null]) > 0 ? 1 : 0
+  count = length([for repository in var.repositories : repository if repository.mode == "REMOTE_REPOSITORY" && repository.remote_repository_config_common != null]) > 0 ? 1 : 0
 
   project_id = var.project_id
 }
@@ -218,7 +230,7 @@ resource "google_artifact_registry_repository" "repositories" {
     for_each = each.value.mode == "REMOTE_REPOSITORY" && each.value.remote_repository_config_docker != null ? [each.value.remote_repository_config_docker] : []
 
     content {
-      description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
+      description = local.remote_repository_description[each.key]
 
       dynamic "docker_repository" {
         for_each = remote_repository_config.value.custom_repository_uri != "DOCKER_HUB" ? [remote_repository_config.value] : []
@@ -257,7 +269,7 @@ resource "google_artifact_registry_repository" "repositories" {
     for_each = each.value.mode == "REMOTE_REPOSITORY" && each.value.remote_repository_config_common != null ? [each.value.remote_repository_config_common] : []
 
     content {
-      description = remote_repository_config.value.description == "" ? each.value.description : remote_repository_config.value.description
+      description = local.remote_repository_description[each.key]
 
       common_repository {
         uri = remote_repository_config.value.uri

@@ -38,3 +38,13 @@
 
 - [ ] 6.1 Release `0.16.0` after review.
 - [ ] 6.2 Verify the implementation against this change (`openspec validate`) and archive it.
+
+## 7. Review fixes
+
+- [x] 7.1 Reject a remote configuration outside `REMOTE_REPOSITORY` mode, for both the common and the docker field, and gate the `google_project` data source on the same predicate the rendering uses so the service agent member output cannot be populated for a repository that is not a cache.
+- [x] 7.2 Reject an empty or whitespace-only `remote_repository_config_common.uri` at plan time.
+- [x] 7.3 Validate every `service_agents` entry against `^serviceAccount:service-[0-9]+@gcp-sa-artifactregistry\.iam\.gserviceaccount\.com$`, update the spec delta requirement that previously stated the module would not verify the principal, and record the trade-off in `design.md`.
+- [x] 7.4 Cover the docker description fallback with an assertion in `docker_hub_upstream_unchanged`, and add a run where an explicit docker remote description wins.
+- [x] 7.5 State in `README.md` that using `remote_repository_config_common` requires `resourcemanager.projects.get` on `project_id` and the Cloud Resource Manager API for the identity that plans.
+- [x] 7.6 Harden both GitHub Actions workflows: `permissions: contents: read`, `persist-credentials: false` on checkout, and SHA-pinned actions with the tag in a trailing comment. The provider version is deliberately left unpinned, see `design.md` decision 13.
+- [x] 7.7 Extract the duplicated remote description fallback into `local.remote_repository_description`, referenced by both dynamic blocks.

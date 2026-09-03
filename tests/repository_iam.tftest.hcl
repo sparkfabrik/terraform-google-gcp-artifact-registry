@@ -95,3 +95,50 @@ run "same_member_in_two_roles" {
     error_message = "the two bindings do not carry one role each"
   }
 }
+
+# service_agents grants a role that allows version deletion, so only an Artifact Registry
+# service agent member is accepted.
+run "non_service_agent_member_rejected" {
+  command = plan
+
+  variables {
+    repositories = {
+      "shared-artifacts" = {
+        description    = "Shared upstream"
+        service_agents = ["group:dev-team@example.com"]
+      }
+    }
+  }
+
+  expect_failures = [var.repositories]
+}
+
+run "wrong_service_agent_domain_rejected" {
+  command = plan
+
+  variables {
+    repositories = {
+      "shared-artifacts" = {
+        description    = "Shared upstream"
+        service_agents = ["serviceAccount:service-123456789012@gcp-sa-pubsub.iam.gserviceaccount.com"]
+      }
+    }
+  }
+
+  expect_failures = [var.repositories]
+}
+
+run "user_managed_service_account_rejected" {
+  command = plan
+
+  variables {
+    repositories = {
+      "shared-artifacts" = {
+        description    = "Shared upstream"
+        service_agents = ["serviceAccount:my-sa@my-project.iam.gserviceaccount.com"]
+      }
+    }
+  }
+
+  expect_failures = [var.repositories]
+}

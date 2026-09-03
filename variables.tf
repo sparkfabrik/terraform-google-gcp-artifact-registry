@@ -106,6 +106,33 @@ variable "repositories" {
     ])
     error_message = "A repository in REMOTE_REPOSITORY mode must set exactly one of remote_repository_config_docker or remote_repository_config_common."
   }
+
+  validation {
+    condition = alltrue([
+      for repo in var.repositories : repo.mode == "REMOTE_REPOSITORY" || (
+        repo.remote_repository_config_docker == null && repo.remote_repository_config_common == null
+      )
+    ])
+    error_message = "remote_repository_config_docker and remote_repository_config_common are only read in REMOTE_REPOSITORY mode. Remove the configuration, or set mode = \"REMOTE_REPOSITORY\"."
+  }
+
+  validation {
+    condition = alltrue([
+      for repo in var.repositories :
+      repo.remote_repository_config_common == null || trimspace(repo.remote_repository_config_common.uri) != ""
+    ])
+    error_message = "remote_repository_config_common.uri must not be empty: set an Artifact Registry resource path, an Artifact Registry repository URL, or a registry URI."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for repo in var.repositories : [
+        for member in repo.service_agents :
+        can(regex("^serviceAccount:service-[0-9]+@gcp-sa-artifactregistry\\.iam\\.gserviceaccount\\.com$", member))
+      ]
+    ]))
+    error_message = "Every service_agents entry must be an Artifact Registry service agent, in the form serviceAccount:service-<PROJECT_NUMBER>@gcp-sa-artifactregistry.iam.gserviceaccount.com. The role it grants allows version deletion, so no other principal shape is accepted."
+  }
 }
 
 variable "artifact_registry_listers_custom_role_name" {

@@ -127,6 +127,11 @@ run "docker_hub_upstream_unchanged" {
   }
 
   assert {
+    condition     = google_artifact_registry_repository.repositories["dockerhub"].remote_repository_config[0].description == "Docker Hub mirror"
+    error_message = "an empty docker remote description did not fall back to the repository description"
+  }
+
+  assert {
     condition     = google_artifact_registry_repository.repositories["dockerhub"].remote_repository_config[0].upstream_credentials[0].username_password_credentials[0].password_secret_version == "projects/test-project/secrets/dockerhub-credentials/versions/latest"
     error_message = "the Secret Manager version reference changed shape"
   }
@@ -218,4 +223,100 @@ run "standard_repository_unaffected" {
     condition     = length(google_artifact_registry_repository.repositories["images"].remote_repository_config) == 0
     error_message = "a remote_repository_config block was rendered for a standard repository"
   }
+}
+
+# An explicit docker remote description wins over the repository description.
+run "docker_explicit_description_wins" {
+  command = plan
+
+  variables {
+    repositories = {
+      "ghcr" = {
+        description = "GitHub Container Registry mirror"
+        mode        = "REMOTE_REPOSITORY"
+        remote_repository_config_docker = {
+          description           = "Upstream: ghcr.io"
+          custom_repository_uri = "https://ghcr.io"
+        }
+      }
+    }
+  }
+
+  assert {
+    condition     = google_artifact_registry_repository.repositories["ghcr"].remote_repository_config[0].description == "Upstream: ghcr.io"
+    error_message = "an explicit docker remote description was not used"
+  }
+}
+
+# A remote configuration on a repository that is not in REMOTE_REPOSITORY mode would be
+# silently ignored, so it is rejected at plan time.
+run "common_configuration_outside_remote_mode_rejected" {
+  command = plan
+
+  variables {
+    repositories = {
+      "images" = {
+        description = "Docker images"
+        remote_repository_config_common = {
+          uri = "projects/upstream-project/locations/europe-west1/repositories/upstream-repo"
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.repositories]
+}
+
+run "docker_configuration_outside_remote_mode_rejected" {
+  command = plan
+
+  variables {
+    repositories = {
+      "images" = {
+        description = "Docker images"
+        remote_repository_config_docker = {
+          custom_repository_uri = "https://ghcr.io"
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.repositories]
+}
+
+# An empty upstream uri is rejected at plan time instead of failing at apply time.
+run "empty_upstream_uri_rejected" {
+  command = plan
+
+  variables {
+    repositories = {
+      "ar-cache" = {
+        description = "Pull-through cache"
+        mode        = "REMOTE_REPOSITORY"
+        remote_repository_config_common = {
+          uri = ""
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.repositories]
+}
+
+run "blank_upstream_uri_rejected" {
+  command = plan
+
+  variables {
+    repositories = {
+      "ar-cache" = {
+        description = "Pull-through cache"
+        mode        = "REMOTE_REPOSITORY"
+        remote_repository_config_common = {
+          uri = "   "
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.repositories]
 }
