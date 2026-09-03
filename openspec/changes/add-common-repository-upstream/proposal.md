@@ -29,7 +29,7 @@ module can only grant `roles/artifactregistry.reader` (`readers`) and
 cannot be declared as the upstream of another project's cache without an out-of-band IAM
 change that no Terraform plan will show.
 
-Issue: platform/#4903
+Issue: sparkfabrik-innovation-team/board#4903
 
 ## What Changes
 
