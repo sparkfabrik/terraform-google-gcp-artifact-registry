@@ -27,7 +27,7 @@ jobs:
         with:
           # mock_provider requires Terraform >= 1.7. The module itself still supports
           # >= 1.3: test files are not consumed by module users.
-          terraform_version: 1.14.0
+          terraform_version: v1.17.1
           terraform_wrapper: false
 
       - name: Show version
